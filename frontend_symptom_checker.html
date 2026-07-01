@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>MED_AI_SYSTEM - Symptom Diagnostic Module</title>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&amp;family=Inter:wght@400&amp;family=JetBrains+Mono:wght@500;700&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "inverse-on-surface": "#f0f1f1",
+                        "on-primary-fixed-variant": "#474747",
+                        "on-secondary-fixed": "#001f24",
+                        "on-tertiary-container": "#f04244",
+                        "primary-container": "#1b1b1b",
+                        "tertiary-container": "#410004",
+                        "surface-variant": "#e2e2e2",
+                        "secondary-fixed": "#9cf0ff",
+                        "on-primary-container": "#848484",
+                        "background": "#f9f9f9",
+                        "on-tertiary": "#ffffff",
+                        "surface-container-high": "#e8e8e8",
+                        "on-error": "#ffffff",
+                        "secondary": "#006875",
+                        "error": "#ba1a1a",
+                        "on-secondary-fixed-variant": "#004f58",
+                        "outline": "#7e7576",
+                        "tertiary-fixed-dim": "#ffb3ae",
+                        "secondary-fixed-dim": "#00daf3",
+                        "outline-variant": "#cfc4c5",
+                        "primary-fixed-dim": "#c6c6c6",
+                        "inverse-primary": "#c6c6c6",
+                        "primary-fixed": "#e2e2e2",
+                        "on-surface-variant": "#4c4546",
+                        "primary": "#000000",
+                        "surface-dim": "#dadada",
+                        "surface-container-highest": "#e2e2e2",
+                        "on-tertiary-fixed": "#410004",
+                        "surface": "#f9f9f9",
+                        "on-secondary": "#ffffff",
+                        "surface-container": "#eeeeee",
+                        "on-secondary-container": "#00616d",
+                        "on-tertiary-fixed-variant": "#930014",
+                        "inverse-surface": "#2f3131",
+                        "on-surface": "#1a1c1c",
+                        "surface-container-low": "#f3f3f4",
+                        "on-primary": "#ffffff",
+                        "surface-container-lowest": "#ffffff",
+                        "on-primary-fixed": "#1b1b1b",
+                        "surface-tint": "#5e5e5e",
+                        "on-background": "#1a1c1c",
+                        "surface-bright": "#f9f9f9",
+                        "tertiary": "#000000",
+                        "error-container": "#ffdad6",
+                        "tertiary-fixed": "#ffdad7",
+                        "on-error-container": "#93000a",
+                        "secondary-container": "#00e3fd"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0px",
+                        "lg": "0px",
+                        "xl": "0px",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "base": "8px",
+                        "offset-depth": "6px",
+                        "border-width": "4px",
+                        "container-margin": "32px",
+                        "gutter": "24px"
+                    },
+                    "fontFamily": {
+                        "body-md": ["Inter"],
+                        "headline-lg-mobile": ["Space Grotesk"],
+                        "headline-md": ["Space Grotesk"],
+                        "body-lg": ["Inter"],
+                        "label-caps": ["JetBrains Mono"],
+                        "headline-xl": ["Space Grotesk"],
+                        "headline-lg": ["Space Grotesk"],
+                        "data-mono": ["JetBrains Mono"]
+                    },
+                    "fontSize": {
+                        "body-md": ["16px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "headline-lg-mobile": ["32px", { "lineHeight": "1.2", "fontWeight": "700" }],
+                        "headline-md": ["24px", { "lineHeight": "1.3", "fontWeight": "600" }],
+                        "body-lg": ["18px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "label-caps": ["12px", { "lineHeight": "1.2", "fontWeight": "700" }],
+                        "headline-xl": ["64px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "headline-lg": ["40px", { "lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+                        "data-mono": ["14px", { "lineHeight": "1.4", "fontWeight": "500" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .icon-fill {
+            font-variation-settings: 'FILL' 1;
+        }
+        
+        /* Modern Brutalist Utilities */
+        .brutalist-border { border: 4px solid #000000; }
+        .brutalist-shadow { box-shadow: 6px 6px 0px 0px rgba(0,0,0,1); }
+        .brutalist-shadow-hover:hover { box-shadow: 0px 0px 0px 0px rgba(0,0,0,1); transform: translate(6px, 6px); transition: all 0.1s ease-in-out; }
+        .brutalist-shadow-active:active { box-shadow: 0px 0px 0px 0px rgba(0,0,0,1); transform: translate(6px, 6px); }
+        
+        .ai-border-left { border-left: 8px solid #00E5FF; }
+        .dashed-upload-border { border: 4px dashed #FFD500; }
+        
+        /* Flash animation for emergency banner */
+        @keyframes flashRed {
+            0% { background-color: #FF4D4D; color: white; }
+            50% { background-color: #ffffff; color: #FF4D4D; }
+            100% { background-color: #FF4D4D; color: white; }
+        }
+        .flash-emergency {
+            animation: flashRed 2s infinite;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen flex flex-col selection:bg-secondary-container selection:text-on-secondary-container">
+<!-- Top Navigation (Mobile Only) -->
+<nav class="md:hidden flex justify-between items-center w-full px-container-margin py-base max-w-full bg-surface dark:bg-primary-container border-b-4 border-primary dark:border-primary-fixed fixed top-0 z-50">
+<div class="font-headline-md text-headline-md font-bold tracking-tighter text-primary dark:text-on-primary-fixed">MED_AI_SYSTEM</div>
+<div class="flex gap-4">
+<span class="material-symbols-outlined text-primary dark:text-primary-fixed hover:bg-secondary-container dark:hover:bg-secondary-fixed transition-colors duration-100 p-2 cursor-pointer active:translate-x-[2px] active:translate-y-[2px]" data-icon="notifications">notifications</span>
+<span class="material-symbols-outlined text-primary dark:text-primary-fixed hover:bg-secondary-container dark:hover:bg-secondary-fixed transition-colors duration-100 p-2 cursor-pointer active:translate-x-[2px] active:translate-y-[2px]" data-icon="emergency">emergency</span>
+<span class="material-symbols-outlined text-primary dark:text-primary-fixed hover:bg-secondary-container dark:hover:bg-secondary-fixed transition-colors duration-100 p-2 cursor-pointer active:translate-x-[2px] active:translate-y-[2px]" data-icon="account_circle">account_circle</span>
+</div>
+</nav>
+<div class="flex flex-grow w-full">
+<!-- Side Navigation (Web) -->
+<aside class="hidden md:flex fixed left-0 top-0 h-screen w-64 border-r-4 border-primary dark:border-primary-fixed bg-surface dark:bg-primary-container flex-col z-40">
+<div class="mb-gutter p-base mt-4 ml-2">
+<div class="font-headline-md text-headline-md font-bold text-primary dark:text-on-primary-fixed mb-2">MED_OS v1.0</div>
+<div class="font-label-caps text-label-caps text-on-surface-variant">Clinical AI Active</div>
+</div>
+<div class="flex flex-col gap-2 flex-grow px-base">
+<!-- Inactive -->
+<a class="flex items-center gap-3 p-3 font-label-caps text-label-caps text-primary dark:text-primary-fixed border-2 border-transparent hover:bg-secondary-container dark:hover:bg-secondary-fixed-variant transition-all duration-75" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+                Dashboard
+            </a>
+<!-- Active -->
+<a class="flex items-center gap-3 p-3 font-label-caps text-label-caps bg-secondary-container dark:bg-secondary-fixed text-on-secondary-container dark:text-on-secondary-fixed border-4 border-primary dark:border-primary-fixed translate-x-[-6px] translate-y-[-6px] shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]" href="#">
+<span class="material-symbols-outlined icon-fill" data-icon="medical_services">medical_services</span>
+                Symptom Checker
+            </a>
+<!-- Inactive -->
+<a class="flex items-center gap-3 p-3 font-label-caps text-label-caps text-primary dark:text-primary-fixed border-2 border-transparent hover:bg-secondary-container dark:hover:bg-secondary-fixed-variant transition-all duration-75" href="#">
+<span class="material-symbols-outlined" data-icon="folder_shared">folder_shared</span>
+                Medical Records
+            </a>
+<!-- Inactive -->
+<a class="flex items-center gap-3 p-3 font-label-caps text-label-caps text-primary dark:text-primary-fixed border-2 border-transparent hover:bg-secondary-container dark:hover:bg-secondary-fixed-variant transition-all duration-75" href="#">
+<span class="material-symbols-outlined" data-icon="smart_toy">smart_toy</span>
+                AI Consult
+            </a>
+<!-- Inactive -->
+<a class="flex items-center gap-3 p-3 font-label-caps text-label-caps text-primary dark:text-primary-fixed border-2 border-transparent hover:bg-secondary-container dark:hover:bg-secondary-fixed-variant transition-all duration-75" href="#">
+<span class="material-symbols-outlined" data-icon="monitoring">monitoring</span>
+                Analytics
+            </a>
+<!-- Inactive -->
+<a class="flex items-center gap-3 p-3 font-label-caps text-label-caps text-primary dark:text-primary-fixed border-2 border-transparent hover:bg-secondary-container dark:hover:bg-secondary-fixed-variant transition-all duration-75" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+                Settings
+            </a>
+</div>
+<div class="px-base pb-base">
+<button class="bg-[#FF4D4D] text-white font-label-caps text-label-caps p-3 brutalist-border brutalist-shadow brutalist-shadow-hover w-full text-left flex justify-between items-center mb-4">
+                EMERGENCY PROTOCOL
+                <span class="material-symbols-outlined">warning</span>
+</button>
+<div class="flex flex-col gap-2 pt-4 border-t-4 border-primary">
+<a class="flex items-center gap-3 p-2 font-label-caps text-label-caps text-primary border-2 border-transparent hover:bg-secondary-container transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="help_center">help_center</span>
+                    Support
+                </a>
+<a class="flex items-center gap-3 p-2 font-label-caps text-label-caps text-primary border-2 border-transparent hover:bg-secondary-container transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+                    Sign Out
+                </a>
+</div>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="flex-grow md:ml-64 mt-16 md:mt-0 p-container-margin w-full flex flex-col gap-gutter max-w-screen-2xl">
+<!-- Emergency Banner (Hidden by default, shown via JS if needed) -->
+<div class="hidden w-full brutalist-border flash-emergency p-4 flex items-center justify-between" id="emergency-banner">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined icon-fill text-3xl">error</span>
+<span class="font-headline-md text-headline-md font-bold uppercase tracking-widest">CRITICAL SYMPTOMS DETECTED</span>
+</div>
+<button class="bg-primary text-white font-label-caps text-label-caps px-4 py-2 brutalist-border brutalist-shadow-active hover:bg-opacity-90">INITIATE EMERGENCY RESPONSE</button>
+</div>
+<!-- Page Header -->
+<header class="flex flex-col border-b-4 border-primary pb-4 mb-4">
+<h1 class="font-headline-xl text-headline-xl text-primary font-bold tracking-tighter uppercase leading-none md:text-headline-xl text-headline-lg-mobile">
+                    SYMPTOM DIAGNOSTIC MODULE
+                </h1>
+<p class="font-data-mono text-data-mono text-on-surface-variant mt-2 uppercase">Input patient data for AI-assisted differential diagnosis.</p>
+</header>
+<!-- Content Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+<!-- Left Column: Input Form -->
+<div class="lg:col-span-8 flex flex-col gap-gutter">
+<!-- Free Text Input -->
+<div class="bg-surface p-gutter brutalist-border flex flex-col gap-4 relative">
+<div class="absolute top-0 right-0 bg-secondary-container text-primary font-label-caps text-label-caps px-3 py-1 border-l-4 border-b-4 border-primary">
+                        PRIMARY INPUT
+                    </div>
+<label class="font-headline-md text-headline-md font-bold text-primary flex items-center gap-2" for="condition-desc">
+<span class="material-symbols-outlined" data-icon="edit_note">edit_note</span>
+                        Describe your condition...
+                    </label>
+<textarea class="w-full bg-white text-primary font-body-lg text-body-lg brutalist-border p-4 focus:outline-none focus:border-secondary-container focus:ring-0 resize-none" id="condition-desc" placeholder="E.g., I have been experiencing a sharp pain in my lower right abdomen for the past 48 hours..." rows="5"></textarea>
+</div>
+<!-- Chips Area -->
+<div class="bg-surface p-gutter brutalist-border flex flex-col gap-4 ai-border-left">
+<label class="font-headline-md text-headline-md font-bold text-primary flex items-center gap-2">
+<span class="material-symbols-outlined" data-icon="add_circle">add_circle</span>
+                        Quick Select Symptoms
+                    </label>
+<div class="flex flex-wrap gap-3">
+<button class="bg-white text-primary font-data-mono text-data-mono px-4 py-2 border-2 border-primary hover:bg-secondary-container hover:border-primary transition-colors cursor-pointer">Cough</button>
+<button class="bg-white text-primary font-data-mono text-data-mono px-4 py-2 border-2 border-primary hover:bg-secondary-container hover:border-primary transition-colors cursor-pointer">Fever</button>
+<button class="bg-white text-primary font-data-mono text-data-mono px-4 py-2 border-2 border-primary hover:bg-secondary-container hover:border-primary transition-colors cursor-pointer">Fatigue</button>
+<button class="bg-white text-primary font-data-mono text-data-mono px-4 py-2 border-2 border-primary hover:bg-secondary-container hover:border-primary transition-colors cursor-pointer">Nausea</button>
+<button class="bg-white text-primary font-data-mono text-data-mono px-4 py-2 border-2 border-primary hover:bg-secondary-container hover:border-primary transition-colors cursor-pointer">Headache</button>
+<button class="bg-white text-primary font-data-mono text-data-mono px-4 py-2 border-2 border-primary hover:bg-secondary-container hover:border-primary transition-colors cursor-pointer">Shortness of Breath</button>
+<button class="bg-surface-variant text-on-surface-variant font-data-mono text-data-mono px-4 py-2 border-2 border-dashed border-outline hover:bg-surface-dim transition-colors cursor-pointer flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">add</span> Custom
+                        </button>
+</div>
+</div>
+<!-- File Upload -->
+<div class="bg-surface p-gutter dashed-upload-border flex flex-col items-center justify-center gap-4 text-center min-h-[200px] hover:bg-[#FFD500]/10 transition-colors cursor-pointer">
+<span class="material-symbols-outlined text-[48px] text-primary">upload_file</span>
+<div>
+<h3 class="font-headline-md text-headline-md font-bold text-primary">Upload Medical Reports</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">Drag and drop lab results, imaging, or previous diagnoses (PDF, JPG, PNG)</p>
+</div>
+<button class="bg-white text-primary font-label-caps text-label-caps px-6 py-2 border-2 border-primary hover:bg-primary hover:text-white transition-colors">
+                        BROWSE FILES
+                    </button>
+</div>
+<!-- Primary Action -->
+<button class="bg-white text-primary font-headline-lg text-headline-lg font-bold p-6 brutalist-border brutalist-shadow brutalist-shadow-hover w-full flex justify-between items-center group">
+<span>EXECUTE PREDICTION</span>
+<span class="material-symbols-outlined text-[40px] group-hover:translate-x-2 transition-transform">arrow_forward</span>
+</button>
+</div>
+<!-- Right Column: Status & Info -->
+<div class="lg:col-span-4 flex flex-col gap-gutter">
+<!-- AI Status Card -->
+<div class="bg-primary text-white p-gutter brutalist-border brutalist-shadow">
+<div class="flex items-center gap-3 mb-4 border-b-4 border-white pb-4">
+<span class="material-symbols-outlined animate-spin">memory</span>
+<h2 class="font-headline-md text-headline-md font-bold">AI ENGINE STATUS</h2>
+</div>
+<div class="flex flex-col gap-2 font-data-mono text-data-mono">
+<div class="flex justify-between border-b border-surface-tint border-opacity-50 pb-1">
+<span class="text-on-primary-container">Model:</span>
+<span class="text-secondary-fixed font-bold">MED_X_7B</span>
+</div>
+<div class="flex justify-between border-b border-surface-tint border-opacity-50 pb-1">
+<span class="text-on-primary-container">Confidence Threshold:</span>
+<span class="text-white">85.0%</span>
+</div>
+<div class="flex justify-between border-b border-surface-tint border-opacity-50 pb-1">
+<span class="text-on-primary-container">Data Sources:</span>
+<span class="text-white">Active</span>
+</div>
+<div class="flex justify-between mt-2">
+<span class="text-on-primary-container">System Readiness:</span>
+<span class="text-secondary-fixed bg-secondary-fixed/20 px-2 py-0.5 border border-secondary-fixed">OPTIMAL</span>
+</div>
+</div>
+</div>
+<!-- Guidelines Card -->
+<div class="bg-surface p-gutter brutalist-border ai-border-left">
+<h3 class="font-headline-md text-headline-md font-bold text-primary mb-4 flex items-center gap-2">
+<span class="material-symbols-outlined" data-icon="policy">policy</span>
+                        Guidelines
+                    </h3>
+<ul class="font-body-md text-body-md text-primary list-none flex flex-col gap-4">
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-[20px] text-secondary">check_circle</span>
+<span>Provide as much detail as possible in the text area.</span>
+</li>
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-[20px] text-secondary">check_circle</span>
+<span>Include duration, severity, and any alleviating factors.</span>
+</li>
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-[20px] text-[#FF4D4D]">warning</span>
+<span>Do not use this tool for active life-threatening emergencies. Call emergency services immediately.</span>
+</li>
+</ul>
+</div>
+<!-- Visual Placeholder -->
+<div class="bg-surface brutalist-border overflow-hidden h-64 relative group">
+<img class="w-full h-full object-cover grayscale opacity-80 group-hover:grayscale-0 transition-all duration-500" data-alt="A highly stylized, minimalist architectural rendering of a sterile, futuristic medical laboratory interior. High-key lighting, bright light-mode aesthetic. Solid black lines defining structural elements, accents of electric cyan. No soft shadows, flat brutalist composition." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB6H-pBfysHlyG4jALgGqrPTx86Psg3RdHMc0_sSIazjjDLfYQcjxlmva3vvv6AhcOowBq_Mq-9OXrvAn3irVo6Bii0lHQx5EcnJqK2XokPBES0T-6DbR7XkkT_xNhssHwi7SxvckdFocI1e_AMXUjjND9VtsJSJ5JlbDKCSbT5TlbaohljvUXTBsIFQjskj5TOtMb72Wm1CoWFYcMN8p8a87ClVRRwl7JpEMmflwdMgi9tbi-OQQOyIDS3FlwqAJK72oCJZobRplVs"/>
+<div class="absolute bottom-0 left-0 w-full bg-primary text-white p-2 font-data-mono text-data-mono border-t-4 border-black">
+                        CLINICAL_ENV_RENDER_01
+                    </div>
+</div>
+</div>
+</div>
+</main>
+</div>
+<!-- Footer -->
+<footer class="w-full py-container-margin px-container-margin flex flex-col md:flex-row justify-between items-center gap-gutter bg-primary dark:bg-primary-container text-on-primary dark:text-on-primary-container font-data-mono text-data-mono border-t-4 border-primary dark:border-primary-fixed mt-auto z-40 relative md:ml-64 md:w-[calc(100%-16rem)]">
+<div class="font-headline-lg text-headline-lg text-on-primary dark:text-on-primary-fixed">MED_AI_SYSTEM</div>
+<div class="text-center md:text-left flex-grow md:ml-8">© 2024 MED_AI_SYSTEM. ALL RIGHTS RESERVED. CLINICAL ACCURACY SUBJECT TO VERIFICATION.</div>
+<div class="flex gap-4 flex-wrap justify-center md:justify-end">
+<a class="text-on-primary dark:text-on-primary-container hover:text-secondary-container transition-colors" href="#">Privacy Policy</a>
+<a class="text-on-primary dark:text-on-primary-container hover:text-secondary-container transition-colors" href="#">Terms of Service</a>
+<a class="text-on-primary dark:text-on-primary-container hover:text-secondary-container transition-colors" href="#">AI Disclaimer</a>
+<a class="text-on-primary dark:text-on-primary-container hover:text-secondary-container transition-colors" href="#">Contact Support</a>
+</div>
+</footer>
+<script>
+        // Simple interaction script to toggle active state on chips
+        document.querySelectorAll('button').forEach(btn => {
+            if(btn.textContent.trim() === 'Cough' || btn.textContent.trim() === 'Fever' || btn.textContent.trim() === 'Fatigue' || btn.textContent.trim() === 'Nausea' || btn.textContent.trim() === 'Headache' || btn.textContent.trim() === 'Shortness of Breath') {
+                btn.addEventListener('click', function() {
+                    this.classList.toggle('bg-secondary-container');
+                    this.classList.toggle('bg-white');
+                    this.classList.toggle('font-bold');
+                });
+            }
+        });
+
+        // Simulate severe keyword detection for Emergency Banner
+        const textarea = document.getElementById('condition-desc');
+        const emergencyBanner = document.getElementById('emergency-banner');
+        const severeKeywords = ['chest pain', 'heart attack', 'stroke', 'bleeding', 'unconscious'];
+
+        textarea.addEventListener('input', function() {
+            const text = this.value.toLowerCase();
+            const hasSevere = severeKeywords.some(keyword => text.includes(keyword));
+            
+            if (hasSevere) {
+                emergencyBanner.classList.remove('hidden');
+            } else {
+                emergencyBanner.classList.add('hidden');
+            }
+        });
+    </script>
+</body></html>

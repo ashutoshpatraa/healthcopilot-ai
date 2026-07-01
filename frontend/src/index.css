@@ -35,4 +35,22 @@
   .brutalist-shadow-cyan { box-shadow: 6px 6px 0px 0px #00E5FF; }
   .hatch-bg { background: repeating-linear-gradient(45deg, #000000, #000000 10px, #00E5FF 10px, #00E5FF 20px); }
   .grid-12 { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 24px; }
+
+  @keyframes scan {
+      0% { transform: translateY(0); }
+      50% { transform: translateY(600px); }
+      100% { transform: translateY(0); }
+  }
+
+  .ai-border-left { border-left: 8px solid #00E5FF; }
+  .dashed-upload-border { border: 4px dashed #FFD500; }
+  
+  @keyframes flashRed {
+      0% { background-color: #FF4D4D; color: white; }
+      50% { background-color: #ffffff; color: #FF4D4D; }
+      100% { background-color: #FF4D4D; color: white; }
+  }
+  .flash-emergency {
+      animation: flashRed 2s infinite;
+  }
 }
