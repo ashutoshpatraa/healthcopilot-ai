@@ -10,7 +10,7 @@ export default function Dashboard() {
       </div>
 
       {/* Dashboard Grid */}
-      <div className="grid-12">
+      <div className="grid grid-cols-4 md:grid-cols-8 lg:grid-cols-12 gap-gutter">
           {/* Health Summary (Span 8) */}
           <Card className="col-span-12 md:col-span-8 relative">
             <div className="absolute top-0 left-0 bottom-0 w-2 bg-secondary-container"></div>
@@ -81,7 +81,7 @@ export default function Dashboard() {
           <div className="col-span-12 md:col-span-7 bg-surface-container-lowest brutalist-border overflow-hidden flex flex-col">
             <div className="p-6 border-b-4 border-primary bg-surface flex justify-between items-center">
               <h3 className="font-headline-md text-headline-md uppercase">Recent Activity</h3>
-              <span className="material-symbols-outlined">filter_list</span>
+              <button aria-label="Filter activity" className="material-symbols-outlined cursor-pointer hover:text-secondary-container transition-colors bg-transparent border-none p-0 text-primary dark:text-white">filter_list</button>
             </div>
             <div className="overflow-x-auto w-full">
               <table className="w-full text-left border-collapse font-data-mono text-data-mono">

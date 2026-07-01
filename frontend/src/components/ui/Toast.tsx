@@ -27,7 +27,7 @@ export const Toast: React.FC<ToastProps> = ({ message, type = 'info', onClose, d
   
   switch (type) {
     case 'success':
-      typeClasses = 'bg-[#00C853] text-primary';
+      typeClasses = 'bg-[#00C853] text-primary dark:text-black';
       icon = 'check_circle';
       break;
     case 'error':
@@ -35,12 +35,12 @@ export const Toast: React.FC<ToastProps> = ({ message, type = 'info', onClose, d
       icon = 'error';
       break;
     case 'warning':
-      typeClasses = 'bg-[#FFD500] text-primary';
+      typeClasses = 'bg-[#FFD500] text-primary dark:text-black';
       icon = 'warning';
       break;
     case 'info':
     default:
-      typeClasses = 'bg-secondary-container text-primary';
+      typeClasses = 'bg-cyan-accent text-primary dark:text-black';
       icon = 'info';
       break;
   }

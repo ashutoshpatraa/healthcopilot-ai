@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import Layout from '../components/Layout';
 import { Button } from '../components/ui/Button';
 
@@ -11,7 +11,7 @@ export default function AIConsult() {
     }
   ]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
     if (!message.trim()) return;
 
@@ -21,7 +21,8 @@ export default function AIConsult() {
 
     try {
       // Temporary mock fetch, we'll connect this to the real backend later
-      const res = await fetch('http://localhost:8000/api/v1/chat', {
+      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+      const res = await fetch(`${apiUrl}/api/v1/chat/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message: userMessage })
@@ -32,7 +33,7 @@ export default function AIConsult() {
       console.error(error);
       setMessages(prev => [...prev, { role: 'system', text: "Error connecting to AI Server." }]);
     }
-  };
+  }, [message]);
 
   return (
     <Layout mainClassName="flex-1 flex flex-col md:ml-64 mt-20 md:mt-0 overflow-hidden relative bg-surface-container-low h-full">

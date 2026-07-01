@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import Layout from '../components/Layout';
 import { Button } from '../components/ui/Button';
 import { useToast, Toast } from '../components/ui/Toast';
@@ -6,19 +6,22 @@ import { useToast, Toast } from '../components/ui/Toast';
 export default function MedicalReports() {
   const [file, setFile] = useState<File | null>(null);
   const [uploadStatus, setUploadStatus] = useState<string>('');
+  const [isUploading, setIsUploading] = useState(false);
   const { toast, showToast, hideToast } = useToast();
 
-  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleUpload = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       const selectedFile = e.target.files[0];
       setFile(selectedFile);
       setUploadStatus('Uploading...');
+      setIsUploading(true);
 
       const formData = new FormData();
       formData.append('file', selectedFile);
 
       try {
-        const res = await fetch('http://localhost:8000/api/v1/upload', {
+        const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+        const res = await fetch(`${apiUrl}/api/v1/upload/`, {
           method: 'POST',
           body: formData
         });
@@ -29,9 +32,11 @@ export default function MedicalReports() {
         console.error(err);
         setUploadStatus('Error uploading file');
         showToast('Error uploading file', 'error');
+      } finally {
+        setIsUploading(false);
       }
     }
-  };
+  }, [showToast]);
 
   return (
     <Layout mainClassName="flex-1 w-full md:ml-64 mt-20 md:mt-0 min-h-screen flex flex-col">
@@ -50,17 +55,18 @@ export default function MedicalReports() {
             type="file" 
             accept=".pdf,.jpg,.png" 
             onChange={handleUpload}
-            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" 
+            disabled={isUploading}
+            className={`absolute inset-0 w-full h-full opacity-0 z-10 ${isUploading ? 'cursor-wait' : 'cursor-pointer'}`} 
           />
-          <button className="w-full bg-surface-container-lowest border-[5px] border-primary border-dashed py-16 flex flex-col items-center justify-center gap-4 hover:bg-secondary-container hover:border-solid hover:shadow-[6px_6px_0px_0px_rgba(0,227,253,1)] transition-all duration-150 group">
-            <span className="material-symbols-outlined text-[48px] text-primary group-hover:scale-110 transition-transform">upload_file</span>
+          <div className={`w-full bg-surface-container-lowest border-[5px] border-primary border-dashed py-16 flex flex-col items-center justify-center gap-4 transition-all duration-150 group ${isUploading ? 'opacity-70' : 'hover:bg-secondary-container hover:border-solid hover:brutalist-shadow-cyan cursor-pointer'}`}>
+            <span className={`material-symbols-outlined text-[48px] text-primary transition-transform ${isUploading ? 'animate-bounce' : 'group-hover:scale-110'}`}>{isUploading ? 'cloud_upload' : 'upload_file'}</span>
             <span className="font-headline-md text-headline-md text-primary uppercase text-center px-4">
-              {file ? file.name : 'Upload New Medical Record'}
+              {isUploading ? 'Uploading...' : (file ? file.name : 'Upload New Medical Record')}
             </span>
             <span className="font-data-mono text-data-mono text-on-surface-variant uppercase">
               {uploadStatus || 'Supported: PDF, JPG, PNG (Max 50MB)'}
             </span>
-          </button>
+          </div>
         </div>
 
         {/* AI Summary Banner */}
@@ -89,7 +95,7 @@ export default function MedicalReports() {
             </div>
             <div className="flex-1 bg-surface-variant p-4 relative overflow-hidden flex items-center justify-center">
               {/* Placeholder for document image */}
-              <div className="bg-cover bg-center w-full h-full border-2 border-outline-variant shadow-sm bg-surface-container-lowest" style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuBhD7ylJKVX2e-eTy6mVikQi8kazQdOj4jFNiUkGaCR7KvDwFA6pZEVJQl_BfZPwGaNvjIwv6zs9NukaCONRlvZFKfG666d8kkHTaNyr9B9nOeG7WoXjhSYsVY7gQ1PnkR5DuDwDdjZkZcjdD8yPdD1NfpKqDqX-xAtuWnNCGhUYom_u4zA4YKuFd33u3zX7vs46sgDsE3vlT5hizhQv9GO7eYnQRON1Eehz16hEIqw5PzlhbRjdvYEyZPN9boB3HjLBKgrqQCrKt9G')" }}></div>
+              <div role="img" aria-label="Scanned medical document placeholder" className="bg-cover bg-center w-full h-full border-2 border-outline-variant shadow-sm bg-surface-container-lowest" style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuBhD7ylJKVX2e-eTy6mVikQi8kazQdOj4jFNiUkGaCR7KvDwFA6pZEVJQl_BfZPwGaNvjIwv6zs9NukaCONRlvZFKfG666d8kkHTaNyr9B9nOeG7WoXjhSYsVY7gQ1PnkR5DuDwDdjZkZcjdD8yPdD1NfpKqDqX-xAtuWnNCGhUYom_u4zA4YKuFd33u3zX7vs46sgDsE3vlT5hizhQv9GO7eYnQRON1Eehz16hEIqw5PzlhbRjdvYEyZPN9boB3HjLBKgrqQCrKt9G')" }}></div>
               {/* Overlay scanning line effect */}
               <div className="absolute top-0 left-0 w-full h-1 bg-secondary-container opacity-70 blur-[1px] animate-[scan_3s_ease-in-out_infinite]"></div>
             </div>

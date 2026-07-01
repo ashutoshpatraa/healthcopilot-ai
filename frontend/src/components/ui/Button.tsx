@@ -15,22 +15,22 @@ export const Button: React.FC<ButtonProps> = ({
   icon,
   ...props 
 }) => {
-  const baseClasses = "font-label-caps text-label-caps p-3 transition-all flex justify-center items-center gap-2 brutalist-border uppercase whitespace-nowrap";
-  const interactiveClasses = "brutalist-shadow active:translate-x-[6px] active:translate-y-[6px] active:shadow-none disabled:opacity-50 disabled:cursor-not-allowed";
+  const baseClasses = "font-label-caps text-label-caps p-3 transition-colors flex justify-center items-center gap-2 uppercase whitespace-nowrap border-border-width";
+  const interactiveClasses = "disabled:opacity-50 disabled:cursor-not-allowed";
   
   let variantClasses = '';
   switch (variant) {
     case 'primary':
-      variantClasses = `bg-primary text-white ${interactiveClasses}`;
+      variantClasses = `bg-primary text-on-primary border-border dark:bg-cyan-accent dark:text-[#000000] dark:border-[#000000] hover:bg-surface-container-highest dark:hover:bg-white dark:hover:text-[#000000] brutalist-shadow active:translate-x-[6px] active:translate-y-[6px] active:shadow-none dark:active:translate-x-[0px] dark:active:translate-y-[0px] ${interactiveClasses}`;
       break;
     case 'secondary':
-      variantClasses = `bg-white text-primary hover:bg-secondary-container ${interactiveClasses}`;
+      variantClasses = `bg-transparent text-primary border-border dark:text-white dark:border-white hover:bg-secondary-container dark:hover:bg-white dark:hover:text-black brutalist-shadow active:translate-x-[6px] active:translate-y-[6px] active:shadow-none dark:active:translate-x-[0px] dark:active:translate-y-[0px] ${interactiveClasses}`;
       break;
     case 'danger':
-      variantClasses = `bg-[#FF4D4D] text-white hover:bg-opacity-90 ${interactiveClasses}`;
+      variantClasses = `bg-error text-white border-border hover:opacity-90 brutalist-shadow active:translate-x-[6px] active:translate-y-[6px] active:shadow-none dark:active:translate-x-[0px] dark:active:translate-y-[0px] ${interactiveClasses}`;
       break;
     case 'ghost':
-      variantClasses = "bg-transparent text-primary hover:bg-surface-variant shadow-none border-transparent hover:border-primary";
+      variantClasses = "bg-transparent text-primary dark:text-white border-transparent hover:border-border dark:hover:border-white";
       break;
   }
 

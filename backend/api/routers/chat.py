@@ -1,27 +1,20 @@
 from typing import Any
-from fastapi import APIRouter, Depends
-from models.user import User
-from api.deps import get_current_active_user
+from fastapi import APIRouter
 from pydantic import BaseModel
+from ml.chat_engine import chat_engine
 
 router = APIRouter()
+
 
 class ChatRequest(BaseModel):
     message: str
 
+
 class ChatResponse(BaseModel):
-    reply: str
+    response: str
+
 
 @router.post("/", response_model=ChatResponse)
-async def chat_with_ai(
-    request: ChatRequest,
-    current_user: User = Depends(get_current_active_user)
-) -> Any:
-    # Simulated LLM interaction
-    user_message = request.message.lower()
-    if "symptom" in user_message:
-        reply = "I can help with that. Please describe your symptoms in detail."
-    else:
-        reply = "Hello, I am HealthCopilot AI. How can I assist you with your health today?"
-        
-    return ChatResponse(reply=reply)
+async def chat_with_ai(request: ChatRequest) -> Any:
+    response_text = chat_engine.respond(request.message)
+    return ChatResponse(response=response_text)

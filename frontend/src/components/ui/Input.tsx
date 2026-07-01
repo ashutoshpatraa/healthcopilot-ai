@@ -11,14 +11,14 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(({ label, er
   return (
     <div className={`flex flex-col gap-2 ${className}`}>
       {label && (
-        <label htmlFor={inputId} className="font-headline-md text-headline-md text-primary">
+        <label htmlFor={inputId} className="font-label-md text-label-md text-primary">
           {label}
         </label>
       )}
       <input
         id={inputId}
         ref={ref}
-        className={`bg-white text-primary font-body-lg text-body-lg brutalist-border p-4 focus:outline-none focus:border-secondary-container focus:ring-0 ${error ? 'border-[#FF4D4D]' : ''}`}
+        className={`bg-surface-container-lowest dark:bg-[#000000] text-primary dark:text-white font-body-md text-body-md border-border-width dark:border-thin-border border-border dark:border-white p-4 focus:outline-none focus:border-cyan-accent focus:ring-0 ${error ? 'border-[#FF4D4D] dark:border-[#FF4D4D]' : ''}`}
         {...props}
       />
       {error && <span className="font-label-caps text-label-caps text-[#FF4D4D]">{error}</span>}
@@ -39,14 +39,14 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(({ 
   return (
     <div className={`flex flex-col gap-2 ${className}`}>
       {label && (
-        <label htmlFor={textareaId} className="font-headline-md text-headline-md text-primary">
+        <label htmlFor={textareaId} className="font-label-md text-label-md text-primary">
           {label}
         </label>
       )}
       <textarea
         id={textareaId}
         ref={ref}
-        className={`bg-white text-primary font-body-lg text-body-lg brutalist-border p-4 focus:outline-none focus:border-secondary-container focus:ring-0 resize-none ${error ? 'border-[#FF4D4D]' : ''}`}
+        className={`bg-surface-container-lowest dark:bg-[#000000] text-primary dark:text-white font-body-md text-body-md border-border-width dark:border-thin-border border-border dark:border-white p-4 focus:outline-none focus:border-cyan-accent focus:ring-0 resize-none ${error ? 'border-[#FF4D4D] dark:border-[#FF4D4D]' : ''}`}
         {...props}
       />
       {error && <span className="font-label-caps text-label-caps text-[#FF4D4D]">{error}</span>}

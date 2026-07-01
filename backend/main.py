@@ -5,12 +5,19 @@ from core.config import settings
 from database import engine, Base
 import models
 from api.routers import auth, predict, chat, upload
+from ml.predictor import predictor
+from ml.chat_engine import chat_engine
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Initialize DB (in production use Alembic)
+    # Initialize DB
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
+
+    # Load ML models (non-blocking — falls back gracefully if not trained yet)
+    predictor.load()
+    chat_engine.load()
+
     yield
     await engine.dispose()
 
@@ -20,10 +27,10 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-# Set all CORS enabled origins
+# CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"], # Update for production
+    allow_origins=["*"],  # Restrict in production
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -37,3 +44,12 @@ app.include_router(upload.router, prefix=f"{settings.API_V1_STR}/upload", tags=[
 @app.get("/")
 def root():
     return {"message": "Welcome to HealthCopilot AI API"}
+
+@app.get("/health")
+def health():
+    return {
+        "status": "ok",
+        "symptom_model": predictor.model_info,
+        "chat_engine": {"loaded": chat_engine._loaded},
+    }
+

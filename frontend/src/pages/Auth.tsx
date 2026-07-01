@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
 import { useNavigate } from 'react-router-dom';
+import { ThemeToggle } from '../components/ui/ThemeToggle';
 
 export default function Auth() {
   const navigate = useNavigate();
@@ -27,7 +28,11 @@ export default function Auth() {
       </div>
 
       {/* Right Column: Main Content Area */}
-      <main className="flex-1 flex items-center justify-center p-container-margin lg:p-12 relative overflow-hidden bg-surface-container-lowest">
+      <main className="flex-1 flex flex-col items-center justify-center p-container-margin lg:p-12 relative overflow-hidden bg-surface-container-lowest">
+        
+        <div className="absolute top-container-margin right-container-margin z-20">
+          <ThemeToggle />
+        </div>
         {/* Atmospheric Pattern (Brutalist Grid) */}
         <div 
           className="absolute inset-0 opacity-5 pointer-events-none" 

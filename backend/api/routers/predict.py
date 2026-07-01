@@ -1,34 +1,41 @@
 from typing import Any
-from fastapi import APIRouter, Depends
-from models.user import User
-from api.deps import get_current_active_user
+from fastapi import APIRouter
 from pydantic import BaseModel
+from ml.predictor import predictor
 
 router = APIRouter()
 
+
 class PredictionRequest(BaseModel):
-    symptoms: list[str]
+    symptoms: str | list[str]
+
+
+class DifferentialDiagnosis(BaseModel):
+    disease: str
+    confidence: float
+
 
 class PredictionResponse(BaseModel):
     disease: str
     confidence: float
     specialist: str
+    differentials: list[DifferentialDiagnosis] = []
+    model: str = "unknown"
+
 
 @router.post("/", response_model=PredictionResponse)
-async def predict_disease(
-    request: PredictionRequest,
-    current_user: User = Depends(get_current_active_user)
-) -> Any:
-    # Simulate ML inference (loads model if it exists, otherwise mock)
-    # In production, you would load joblib.load('best_model.pkl')
-    # and run model.predict(request.symptoms)
-    
-    disease = "Common Cold" if "cough" in request.symptoms else "Unknown"
-    confidence = 0.85
-    specialist = "General Physician"
-    
-    return PredictionResponse(
-        disease=disease,
-        confidence=confidence,
-        specialist=specialist
-    )
+async def predict_disease(request: PredictionRequest) -> Any:
+    # Normalise input — frontend may send a string or list
+    if isinstance(request.symptoms, list):
+        symptoms_text = " ".join(request.symptoms)
+    else:
+        symptoms_text = request.symptoms
+
+    result = predictor.predict(symptoms_text)
+    return PredictionResponse(**result)
+
+
+@router.get("/status")
+async def model_status() -> dict:
+    """Return the current status of the ML model."""
+    return predictor.model_info

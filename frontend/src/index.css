@@ -1,45 +1,72 @@
+
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  :root {
+    --color-background: #f9f9f9;
+    --color-surface: #f9f9f9;
+    --color-surface-container: #eeeeee;
+    --color-surface-container-lowest: #ffffff;
+    --color-primary: #000000;
+    --color-on-primary: #ffffff;
+    --color-cyan-accent: #00e3fd;
+    --color-error: #FF4D4D;
+    --color-border: #000000;
+    --color-text: #1a1c1c;
+    --color-on-surface-variant: #4c4546;
+  }
+  
+  .dark, :root.dark {
+    --color-background: #131313;
+    --color-surface: #1a1a1a;
+    --color-surface-container: #222222;
+    --color-surface-container-lowest: #0e0e0e;
+    --color-primary: #ffffff;
+    --color-on-primary: #000000;
+    --color-cyan-accent: #00e5ff;
+    --color-error: #FF4D4D;
+    --color-border: #ffffff;
+    --color-text: #e5e2e1;
+    --color-on-surface-variant: #c4c7c8;
+  }
+
+  body {
+    @apply bg-background text-on-background;
+  }
+}
+
 @layer utilities {
-  .brutal-shadow {
-      box-shadow: 6px 6px 0px 0px #000000;
-  }
-  .brutal-shadow-hover:hover {
-      box-shadow: 0px 0px 0px 0px #000000;
-      transform: translate(6px, 6px);
-  }
-  .brutal-shadow-cyan {
-      box-shadow: 6px 6px 0px 0px #00e3fd;
-  }
-  .brutal-shadow-cyan-hover:hover {
-      box-shadow: 0px 0px 0px 0px #00e3fd;
-      transform: translate(6px, 6px);
-  }
-  .brutal-input:focus {
-      border-bottom-width: 6px;
-  }
-  .brutal-input-container:focus-within label {
-      background-color: #00e3fd;
-      color: #000000;
-  }
+
   .vertical-text {
       writing-mode: vertical-rl;
       text-orientation: mixed;
       transform: rotate(180deg);
   }
   
-  .brutalist-border { border: 4px solid #000000; }
-  .brutalist-shadow { box-shadow: 6px 6px 0px 0px rgba(0,0,0,1); }
-  .brutalist-shadow-cyan { box-shadow: 6px 6px 0px 0px #00E5FF; }
-  .hatch-bg { background: repeating-linear-gradient(45deg, #000000, #000000 10px, #00E5FF 10px, #00E5FF 20px); }
-  .grid-12 { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 24px; }
+  .brutalist-border { border: 4px solid var(--color-border); }
+  .brutalist-border-active { border: 4px solid var(--color-cyan-accent); }
+  
+  .brutalist-shadow { box-shadow: 6px 6px 0px 0px var(--color-border); }
+  .dark .brutalist-shadow { box-shadow: none; }
+  
+  .brutalist-shadow-cyan { box-shadow: 6px 6px 0px 0px var(--color-cyan-accent); }
+  .dark .brutalist-shadow-cyan { box-shadow: none; }
+  
+  .hatch-bg { background: repeating-linear-gradient(45deg, var(--color-surface), var(--color-surface) 10px, var(--color-cyan-accent) 10px, var(--color-cyan-accent) 20px); }
+
 
   @keyframes scan {
       0% { transform: translateY(0); }
       50% { transform: translateY(600px); }
       100% { transform: translateY(0); }
+  }
+
+  @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
   }
 
   .ai-border-left { border-left: 8px solid #00E5FF; }

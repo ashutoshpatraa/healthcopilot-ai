@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import Layout from '../components/Layout';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/Button';
@@ -9,43 +9,58 @@ export default function SymptomChecker() {
   const [description, setDescription] = useState('');
   const [selectedSymptoms, setSelectedSymptoms] = useState<string[]>([]);
   const [isEmergency, setIsEmergency] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [result, setResult] = useState<{
+    disease: string;
+    confidence: number;
+    specialist: string;
+    differentials: { disease: string; confidence: number }[];
+    model: string;
+  } | null>(null);
   const navigate = useNavigate();
   const { toast, showToast, hideToast } = useToast();
 
-  const severeKeywords = ['chest pain', 'heart attack', 'stroke', 'bleeding', 'unconscious', 'emergency'];
-
-  const handleDescriptionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+  const handleDescriptionChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const text = e.target.value;
     setDescription(text);
     
+    const severeKeywords = ['chest pain', 'heart attack', 'stroke', 'bleeding', 'unconscious', 'emergency'];
     const hasSevere = severeKeywords.some(keyword => text.toLowerCase().includes(keyword));
     setIsEmergency(hasSevere);
-  };
+  }, []);
 
-  const toggleSymptom = (symptom: string) => {
+  const toggleSymptom = useCallback((symptom: string) => {
     setSelectedSymptoms(prev => 
       prev.includes(symptom) ? prev.filter(s => s !== symptom) : [...prev, symptom]
     );
-  };
+  }, []);
 
-  const executePrediction = async () => {
-    if (!description && selectedSymptoms.length === 0) return;
+  const executePrediction = useCallback(async () => {
+    const symptomsText = [description, ...selectedSymptoms].filter(Boolean).join(' ');
+    if (!symptomsText.trim()) return;
+    setIsLoading(true);
+    setResult(null);
     
     try {
-      // Basic mock prediction call
-      const res = await fetch('http://localhost:8000/api/v1/predict', {
+      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+      const res = await fetch(`${apiUrl}/api/v1/predict/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ symptoms: description })
+        body: JSON.stringify({ symptoms: symptomsText })
       });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.detail || `Server error ${res.status}`);
+      }
       const data = await res.json();
-      showToast("Prediction Output: " + JSON.stringify(data), 'success');
-      // In a real app we would navigate to a result screen or update UI
-    } catch(error) {
-      console.error(error);
-      showToast("Failed to connect to backend", 'error');
+      setResult(data);
+    } catch(error: unknown) {
+      const msg = error instanceof Error ? error.message : 'Failed to connect to backend';
+      showToast(msg, 'error');
+    } finally {
+      setIsLoading(false);
     }
-  };
+  }, [description, selectedSymptoms, showToast]);
 
   return (
     <Layout>
@@ -106,7 +121,7 @@ export default function SymptomChecker() {
                   <button 
                     key={symp}
                     onClick={() => toggleSymptom(symp)}
-                    className={`font-data-mono text-data-mono px-4 py-2 border-2 border-primary hover:border-primary transition-colors cursor-pointer ${selectedSymptoms.includes(symp) ? 'bg-secondary-container font-bold text-primary' : 'bg-white text-primary hover:bg-secondary-container'}`}
+                    className={`font-data-mono text-data-mono px-4 py-2 border-2 border-border transition-colors cursor-pointer ${selectedSymptoms.includes(symp) ? 'bg-secondary-container font-bold text-primary dark:text-black' : 'bg-surface-container-lowest hover:bg-secondary-container dark:hover:text-black'}`}
                   >
                     {symp}
                   </button>
@@ -130,11 +145,83 @@ export default function SymptomChecker() {
             </div>
 
             {/* Primary Action */}
-            <Button onClick={executePrediction} className="!bg-white !text-primary font-headline-lg text-headline-lg font-bold p-6 brutalist-border shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[6px] hover:translate-y-[6px] transition-all w-full flex justify-between items-center group normal-case border-4">
-              <span>EXECUTE PREDICTION</span>
-              <span className="material-symbols-outlined text-[40px] group-hover:translate-x-2 transition-transform" aria-hidden="true">arrow_forward</span>
+            <Button onClick={executePrediction} disabled={isLoading} className="!bg-white !text-primary font-headline-lg text-headline-lg font-bold p-6 brutalist-border shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[6px] hover:translate-y-[6px] transition-all w-full flex justify-between items-center group normal-case border-4 disabled:opacity-70 disabled:hover:translate-x-0 disabled:hover:translate-y-0 disabled:hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] disabled:cursor-not-allowed">
+              <span>{isLoading ? 'PROCESSING DIAGNOSTIC...' : 'EXECUTE PREDICTION'}</span>
+              <span className={`material-symbols-outlined text-[40px] transition-transform ${isLoading ? 'animate-spin' : 'group-hover:translate-x-2'}`} aria-hidden="true">{isLoading ? 'progress_activity' : 'arrow_forward'}</span>
             </Button>
+
+            {/* Diagnosis Result Panel */}
+            {result && (
+              <div className="bg-surface brutalist-border border-l-8 border-l-[#00E5FF] p-gutter flex flex-col gap-4 animate-[fadeIn_0.3s_ease-in]">
+                <div className="flex items-center justify-between border-b-4 border-primary pb-3">
+                  <h3 className="font-headline-md text-headline-md font-bold text-primary uppercase flex items-center gap-2">
+                    <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>diagnosis</span>
+                    Diagnostic Result
+                  </h3>
+                  <span className="font-data-mono text-data-mono bg-secondary-container text-primary px-2 py-1 border-2 border-primary text-[10px] uppercase">
+                    {result.model === 'local_rf_v1' ? 'AI MODEL' : 'RULE BASED'}
+                  </span>
+                </div>
+
+                {/* Primary diagnosis */}
+                <div className="flex flex-col gap-1">
+                  <span className="font-label-caps text-label-caps text-on-surface-variant uppercase">Primary Diagnosis</span>
+                  <span className="font-headline-lg text-headline-lg font-bold text-primary">{result.disease}</span>
+                </div>
+
+                {/* Confidence bar */}
+                <div className="flex flex-col gap-2">
+                  <div className="flex justify-between font-data-mono text-data-mono text-on-surface-variant">
+                    <span className="uppercase">Confidence</span>
+                    <span className={`font-bold ${result.confidence >= 0.6 ? 'text-secondary' : result.confidence >= 0.4 ? 'text-[#FFD500]' : 'text-error'}`}>
+                      {(result.confidence * 100).toFixed(1)}%
+                    </span>
+                  </div>
+                  <div className="w-full h-3 bg-surface-container border-2 border-primary overflow-hidden">
+                    <div
+                      className={`h-full transition-all duration-700 ${result.confidence >= 0.6 ? 'bg-primary' : result.confidence >= 0.4 ? 'bg-[#FFD500]' : 'bg-error'}`}
+                      style={{ width: `${Math.min(result.confidence * 100, 100)}%` }}
+                    />
+                  </div>
+                  {result.confidence < 0.5 && (
+                    <div className="flex items-start gap-2 bg-error-container border-2 border-error p-3 mt-1">
+                      <span className="material-symbols-outlined text-error text-[18px] mt-0.5 shrink-0">warning</span>
+                      <p className="font-data-mono text-data-mono text-on-error-container text-[11px] uppercase leading-relaxed">
+                        Low confidence — add more specific symptoms for a better diagnosis. Try including duration, severity, or additional symptoms (e.g. "wheezing", "runny nose", "chest tightness").
+                      </p>
+                    </div>
+                  )}
+                </div>
+
+                {/* Specialist */}
+                <div className="flex items-center gap-3 bg-secondary-container p-3 border-2 border-primary">
+                  <span className="material-symbols-outlined text-primary" style={{ fontVariationSettings: "'FILL' 1" }}>stethoscope</span>
+                  <div>
+                    <p className="font-label-caps text-label-caps text-on-surface-variant uppercase">Recommended Specialist</p>
+                    <p className="font-headline-sm font-bold text-primary">{result.specialist}</p>
+                  </div>
+                </div>
+
+                {/* Differential diagnoses */}
+                {result.differentials.length > 1 && (
+                  <div className="flex flex-col gap-2">
+                    <span className="font-label-caps text-label-caps text-on-surface-variant uppercase">Differential Diagnoses</span>
+                    {result.differentials.slice(1).map((d, i) => (
+                      <div key={i} className="flex justify-between items-center font-data-mono text-data-mono border-b border-outline-variant pb-1">
+                        <span className="text-on-surface">{d.disease}</span>
+                        <span className="text-on-surface-variant">{(d.confidence * 100).toFixed(1)}%</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                <p className="font-data-mono text-data-mono text-on-surface-variant text-[11px] mt-2 border-t border-outline-variant pt-2 uppercase">
+                  For informational purposes only. Consult a qualified healthcare provider for diagnosis.
+                </p>
+              </div>
+            )}
           </div>
+
 
           {/* Right Column: Status & Info */}
           <div className="lg:col-span-4 flex flex-col gap-gutter">
@@ -188,7 +275,7 @@ export default function SymptomChecker() {
 
             {/* Visual Placeholder */}
             <div className="bg-surface brutalist-border overflow-hidden h-64 relative group">
-              <div className="w-full h-full object-cover grayscale opacity-80 group-hover:grayscale-0 transition-all duration-500 bg-center bg-cover" style={{backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuB6H-pBfysHlyG4jALgGqrPTx86Psg3RdHMc0_sSIazjjDLfYQcjxlmva3vvv6AhcOowBq_Mq-9OXrvAn3irVo6Bii0lHQx5EcnJqK2XokPBES0T-6DbR7XkkT_xNhssHwi7SxvckdFocI1e_AMXUjjND9VtsJSJ5JlbDKCSbT5TlbaohljvUXTBsIFQjskj5TOtMb72Wm1CoWFYcMN8p8a87ClVRRwl7JpEMmflwdMgi9tbi-OQQOyIDS3FlwqAJK72oCJZobRplVs')" }}></div>
+              <div role="img" aria-label="Clinical environment illustration" className="w-full h-full object-cover grayscale opacity-80 group-hover:grayscale-0 transition-all duration-500 bg-center bg-cover" style={{backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuB6H-pBfysHlyG4jALgGqrPTx86Psg3RdHMc0_sSIazjjDLfYQcjxlmva3vvv6AhcOowBq_Mq-9OXrvAn3irVo6Bii0lHQx5EcnJqK2XokPBES0T-6DbR7XkkT_xNhssHwi7SxvckdFocI1e_AMXUjjND9VtsJSJ5JlbDKCSbT5TlbaohljvUXTBsIFQjskj5TOtMb72Wm1CoWFYcMN8p8a87ClVRRwl7JpEMmflwdMgi9tbi-OQQOyIDS3FlwqAJK72oCJZobRplVs')" }}></div>
               <div className="absolute bottom-0 left-0 w-full bg-primary text-white p-2 font-data-mono text-data-mono border-t-4 border-black">
                 CLINICAL_ENV_RENDER_01
               </div>

@@ -9,6 +9,10 @@ class Settings(BaseSettings):
 
     DATABASE_URL: str = "sqlite+aiosqlite:///./healthcopilot.db"
 
+    # Kaggle credentials for dataset downloads
+    KAGGLE_USERNAME: str = ""
+    KAGGLE_KEY: str = ""
+
     model_config = SettingsConfigDict(env_file=".env", case_sensitive=True)
 
 settings = Settings()

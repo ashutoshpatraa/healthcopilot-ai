@@ -13,11 +13,11 @@ export const Card: React.FC<CardProps> = ({
   className = '',
   ...props
 }) => {
-  const baseClasses = "bg-surface-container-lowest brutalist-border p-6";
+  const baseClasses = "bg-surface-container-lowest dark:bg-surface-container brutalist-border p-6";
   
   let interactiveClasses = '';
   if (interactive) {
-    interactiveClasses = "brutalist-shadow hover:brutalist-shadow-cyan active:translate-x-[6px] active:translate-y-[6px] active:shadow-none transition-all cursor-pointer group";
+    interactiveClasses = "brutalist-shadow hover:brutalist-shadow-cyan active:translate-x-[6px] active:translate-y-[6px] active:shadow-none dark:active:translate-x-[0px] dark:active:translate-y-[0px] dark:hover:border-cyan-accent transition-all cursor-pointer group";
   }
 
   let borderClasses = '';
