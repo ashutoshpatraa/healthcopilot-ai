@@ -271,12 +271,38 @@ def train_model() -> dict:
     from ml.symptom_normalizer import normalize
     df3["symptoms_text"] = df3["symptoms_text"].apply(normalize)
     
-    df = pd.concat([df1, df3], ignore_index=True)
-
-    df = df.dropna(subset=["disease", "symptoms_text"])
-    df = df[df["symptoms_text"].str.strip() != ""]
-
-    logger.info("Combined training set: %d samples, %d diseases", len(df), df["disease"].nunique())
+    # df1 is already augmented (200x) in _load_symptom_dataset, but its Kaggle symptoms.
+    # df3 is augmented (8x) in _builtin_dataset.
+    # To properly merge them so that built-in symptoms (like bloody_stool) get equal representation:
+    # We will extract ALL unique symptoms for each disease across both dfs, then re-augment.
+    
+    combined = pd.concat([df1, df3], ignore_index=True)
+    combined = combined.dropna(subset=["disease", "symptoms_text"])
+    
+    disease_symptoms = {}
+    for _, row in combined.iterrows():
+        disease = row["disease"]
+        syms = str(row["symptoms_text"]).split()
+        if disease not in disease_symptoms:
+            disease_symptoms[disease] = set()
+        disease_symptoms[disease].update(syms)
+        
+    import random
+    random.seed(42)
+    augmented_rows = []
+    for disease, sym_set in disease_symptoms.items():
+        sym_list = list(sym_set)
+        if not sym_list:
+            continue
+        augmented_rows.append({"disease": disease, "symptoms_text": " ".join(sym_list)})
+        for _ in range(200):
+            k = random.randint(min(2, len(sym_list)), max(2, min(5, len(sym_list))))
+            subset = random.sample(sym_list, k)
+            augmented_rows.append({"disease": disease, "symptoms_text": " ".join(subset)})
+            
+    df = pd.DataFrame(augmented_rows).drop_duplicates()
+    
+    logger.info("Combined training set (re-augmented): %d samples, %d diseases", len(df), df["disease"].nunique())
 
     le = LabelEncoder()
     y  = le.fit_transform(df["disease"])

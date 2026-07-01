@@ -81,10 +81,17 @@ SYMPTOM_MAP: list[tuple[str, str]] = [
     ("confusion", "altered_sensorium"),
 
     # Stomach / GI
+    ("tummy ache", "stomach_pain belly_pain abdominal_pain"),
+    ("tummy pain", "stomach_pain belly_pain abdominal_pain"),
     ("stomach ache", "stomach_pain"),
     ("stomach pain", "stomach_pain"),
-    ("belly pain", "stomach_pain abdominal_pain"),
+    ("belly pain", "stomach_pain abdominal_pain belly_pain"),
     ("abdominal pain", "abdominal_pain"),
+    ("black poop", "bloody_stool stomach_bleeding"),
+    ("dark poop", "bloody_stool stomach_bleeding"),
+    ("blood in poop", "bloody_stool"),
+    ("blood in stool", "bloody_stool"),
+    ("bloody poop", "bloody_stool"),
     ("nausea", "nausea"),
     ("feel like vomiting", "nausea vomiting"),
     ("want to vomit", "nausea vomiting"),
@@ -158,8 +165,8 @@ def normalize(text: str) -> str:
     Preserves unmatched words to avoid losing context.
     """
     text = text.lower().strip()
-    # Remove punctuation but keep spaces
-    text = re.sub(r"[,;.\-_/\\()]+", " ", text)
+    # Remove punctuation but keep spaces (do not strip underscores)
+    text = re.sub(r"[,;.\-/\\()]+", " ", text)
     text = re.sub(r"\s+", " ", text).strip()
 
     matched_terms: list[str] = []
