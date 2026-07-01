@@ -1,390 +1,262 @@
-<div align="center">
-
-<img src="https://img.shields.io/badge/HealthCopilot-AI-00E5FF?style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0id2hpdGUiIGQ9Ik0xMiAyQzYuNDggMiAyIDYuNDggMiAxMnM0LjQ4IDEwIDEwIDEwIDEwLTQuNDggMTAtMTBTMTcuNTIgMiAxMiAyem0xIDE1aC0ydi0yaDJ2MnptMC00aC0yVjdoMnY2eiIvPjwvc3ZnPg==" alt="HealthCopilot AI">
-
 # HealthCopilot AI
 
-### AI-Powered Medical Symptom Checker & Health Assistant
+An open-source, locally-running health assistant. Describe your symptoms in plain English, get a differential diagnosis, chat with a medical AI, and extract data from uploaded medical reports — all without sending data to a third-party API.
+
+> **Medical Disclaimer** — This tool is for informational purposes only. It is not a substitute for professional medical advice, diagnosis, or treatment.
 
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.115-009688?style=flat-square&logo=fastapi)](https://fastapi.tiangolo.com)
 [![React](https://img.shields.io/badge/React-18-61DAFB?style=flat-square&logo=react)](https://react.dev)
-[![Python](https://img.shields.io/badge/Python-3.12-3776AB?style=flat-square&logo=python)](https://python.org)
-[![scikit-learn](https://img.shields.io/badge/scikit--learn-1.6-F7931E?style=flat-square&logo=scikit-learn)](https://scikit-learn.org)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](LICENSE)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](CONTRIBUTING.md)
 
-**[Live Demo](http://localhost:5173) · [Report Bug](https://github.com/ashutoshpatraa/healthcopilot-ai/issues) · [Request Feature](https://github.com/ashutoshpatraa/healthcopilot-ai/issues) · [Contributing](CONTRIBUTING.md)**
-
-</div>
-
 ---
 
-## 📖 Overview
+## What it does
 
-**HealthCopilot AI** is a full-stack, open-source health assistant that runs a **local AI model** for symptom-to-disease classification — no cloud API keys needed. It combines a brutalist-inspired React UI with a FastAPI backend and a trained Random Forest classifier (99.56% accuracy on the test set).
-
-> ⚠️ **Medical Disclaimer**: HealthCopilot AI is for **informational and educational purposes only**. It is not a substitute for professional medical diagnosis, advice, or treatment. Always consult a qualified healthcare provider.
-
----
-
-## ✨ Features
-
-| Feature | Description |
+| Feature | Details |
 |---|---|
-| 🧠 **Local AI Symptom Checker** | TF-IDF + Random Forest trained on 6,120 samples across 49 diseases |
-| 💬 **AI Medical Chat** | Semantic Q&A powered by `all-MiniLM-L6-v2` + FAISS vector search |
-| 📄 **Medical Report OCR** | Upload PDFs or images — extracts text via pdfplumber & EasyOCR |
-| 🌡️ **Differential Diagnoses** | Shows top-3 ranked conditions with confidence scores |
-| 👨‍⚕️ **Specialist Routing** | Recommends the right specialist (Cardiologist, Neurologist, etc.) |
-| 🌙 **Dark / Light Theme** | Full system-aware theme with manual toggle |
-| 📱 **Fully Responsive** | Mobile-first design, works on all screen sizes |
-| 🔒 **Auth System** | JWT-based authentication with secure token handling |
-| 📊 **Health Dashboard** | Overview of predictions, chat history, and uploaded reports |
+| **Symptom Checker** | Type symptoms in natural language. A local Random Forest model (trained on ~6k samples, 49 diseases) returns a ranked differential diagnosis with confidence scores and specialist recommendations. |
+| **AI Chat** | Ask health questions. Answers come from a FAISS semantic search over a curated medical FAQ — no LLM API required. |
+| **Report Upload** | Upload a PDF or image of a medical report. Text is extracted via `pdfplumber` (PDF) or `EasyOCR` (images) and summarised locally. |
+| **Dark / Light theme** | System-aware with manual override. |
 
 ---
 
-## 🏗️ Architecture
+## Tech stack
+
+**Backend** — Python 3.12, FastAPI, SQLite (dev), SQLAlchemy (async), JWT auth  
+**Frontend** — React 18, TypeScript, Vite, Vanilla CSS  
+**ML** — scikit-learn (TF-IDF + Random Forest), sentence-transformers, FAISS, NLTK, pdfplumber, EasyOCR  
+**Training data** — [itachi9604/disease-symptom-description-dataset](https://www.kaggle.com/datasets/itachi9604/disease-symptom-description-dataset) + [niyarrbarman/symptom2disease](https://www.kaggle.com/datasets/niyarrbarman/symptom2disease) via Kaggle
+
+---
+
+## Project structure
 
 ```
 healthcopilot-ai/
-├── backend/                  # FastAPI Python backend
+├── backend/
 │   ├── api/
-│   │   └── routers/          # auth, predict, chat, upload
+│   │   ├── deps.py              # FastAPI dependency injection (auth, db session)
+│   │   └── routers/
+│   │       ├── auth.py          # Login / register / token refresh
+│   │       ├── predict.py       # POST /api/v1/predict/
+│   │       ├── chat.py          # POST /api/v1/chat/
+│   │       └── upload.py        # POST /api/v1/upload/
 │   ├── core/
-│   │   └── config.py         # Pydantic settings (reads .env)
+│   │   └── config.py            # Pydantic settings (reads .env)
 │   ├── ml/
-│   │   ├── trainer.py        # Kaggle dataset download + model training
-│   │   ├── predictor.py      # Inference engine (TF-IDF + Random Forest)
-│   │   ├── chat_engine.py    # Semantic chat (sentence-transformers + FAISS)
-│   │   └── symptom_normalizer.py  # Natural language → medical vocabulary
+│   │   ├── trainer.py           # Downloads Kaggle datasets, trains and saves the model
+│   │   ├── predictor.py         # Loads model at startup, runs inference
+│   │   ├── chat_engine.py       # Sentence-transformer + FAISS medical Q&A
+│   │   └── symptom_normalizer.py# Maps natural language to training vocabulary
+│   ├── models/                  # SQLModel table definitions
+│   ├── schemas/                 # Pydantic request/response schemas
 │   ├── services/
-│   │   └── ocr_service.py    # PDF + image OCR (pdfplumber + EasyOCR)
-│   ├── models/               # SQLModel database models
+│   │   └── ocr_service.py       # PDF and image text extraction
 │   ├── scripts/
-│   │   └── train.py          # One-shot model training script
-│   ├── main.py               # FastAPI app entry point
-│   └── requirements.txt
+│   │   └── train.py             # One-shot training entrypoint (run once)
+│   ├── main.py                  # App factory, lifespan (DB init + model load)
+│   ├── database.py              # Async SQLAlchemy engine
+│   ├── requirements.txt
+│   └── .env.example
 │
-├── frontend/                 # React + Vite + TypeScript frontend
-│   ├── src/
-│   │   ├── pages/            # SymptomChecker, AIConsult, MedicalReports, etc.
-│   │   ├── components/       # Reusable UI components (Button, Input, Toast…)
-│   │   ├── context/          # ThemeContext
-│   │   └── index.css         # Design system (CSS variables + custom utilities)
-│   └── package.json
+├── frontend/
+│   └── src/
+│       ├── pages/               # SymptomChecker, AIConsult, MedicalReports, Dashboard, Auth
+│       ├── components/
+│       │   ├── Layout.tsx        # Sidebar + nav shell
+│       │   └── ui/              # Button, Input, Toast, ThemeToggle
+│       ├── context/
+│       │   └── ThemeContext.tsx  # Dark/light theme provider
+│       ├── App.tsx
+│       └── index.css            # CSS custom properties design system
 │
-├── datasets/                 # Kaggle datasets (auto-downloaded, git-ignored)
-└── trained_models/           # Saved model artifacts (git-ignored)
+├── .github/
+│   ├── ISSUE_TEMPLATE/
+│   │   ├── bug_report.md
+│   │   └── feature_request.md
+│   └── PULL_REQUEST_TEMPLATE.md
+│
+├── datasets/           # Auto-downloaded by train.py, not committed
+├── trained_models/     # Saved .pkl files, not committed
+├── CONTRIBUTING.md
+├── LICENSE
+└── README.md
 ```
 
 ---
 
-## 🤖 AI / ML Stack
+## Getting started
 
-| Component | Technology | Details |
-|---|---|---|
-| **Symptom Classifier** | scikit-learn | TF-IDF (ngram 1–2, 8k features) + Random Forest (200 trees) |
-| **Training Data** | Kaggle | `itachi9604/disease-symptom-description-dataset` (4,920 rows) + `niyarrbarman/symptom2disease` (1,200 rows) |
-| **Accuracy** | 99.56% | On 15% held-out test set |
-| **Chat Engine** | sentence-transformers + FAISS | `all-MiniLM-L6-v2` semantic search over medical FAQ KB |
-| **OCR** | pdfplumber + EasyOCR | PDF text extraction + image OCR |
-| **NLP** | NLTK | Tokenization, stopwords, text preprocessing |
-
----
-
-## 🚀 Quick Start
-
-### Prerequisites
+### Requirements
 
 - Python 3.12+
 - Node.js 18+
-- A [Kaggle account](https://www.kaggle.com/) (free) — for downloading training datasets
+- A free [Kaggle account](https://www.kaggle.com/settings) (needed once for training data download)
 
-### 1. Clone the repository
+### 1. Clone
 
 ```bash
 git clone https://github.com/ashutoshpatraa/healthcopilot-ai.git
 cd healthcopilot-ai
 ```
 
-### 2. Backend Setup
+### 2. Backend
 
 ```bash
 cd backend
 
-# Create and activate virtual environment
 python -m venv .venv
-# Windows:
+# Windows
 .venv\Scripts\activate
-# macOS/Linux:
+# macOS / Linux
 source .venv/bin/activate
 
-# Install dependencies
 pip install -r requirements.txt
-```
 
-### 3. Configure environment
-
-```bash
-# Copy the example env file
 cp .env.example .env
+# Edit .env — add your KAGGLE_USERNAME and KAGGLE_KEY
 ```
 
-Edit `backend/.env`:
+### 3. Train the model
 
-```env
-PROJECT_NAME="HealthCopilot AI"
-API_V1_STR="/api/v1"
-SECRET_KEY="your-secret-key-change-this"
-ALGORITHM="HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES=11520
-
-# Database
-DATABASE_URL="sqlite+aiosqlite:///./healthcopilot.db"
-
-# Kaggle credentials (get from https://www.kaggle.com/settings → API)
-KAGGLE_USERNAME="your_kaggle_username"
-KAGGLE_KEY="your_kaggle_api_key"
-```
-
-### 4. Train the AI model
+You only need to do this once. It downloads two Kaggle datasets and trains the classifier (~30 seconds).
 
 ```bash
-# Downloads datasets from Kaggle and trains the classifier (~30 seconds)
 python scripts/train.py
 ```
 
-Expected output:
 ```
 Training Complete!
   Diseases:   49
   Accuracy:   99.56%
-  Model saved: trained_models/symptom_classifier.pkl
+  Model:      trained_models/symptom_classifier.pkl
 ```
 
-### 5. Start the backend
+### 4. Run the backend
 
 ```bash
 uvicorn main:app --reload
-# API available at http://localhost:8000
-# Docs at http://localhost:8000/docs
+# http://localhost:8000
+# http://localhost:8000/docs  (interactive API docs)
 ```
 
-### 6. Frontend Setup
+### 5. Run the frontend
 
 ```bash
 cd ../frontend
 npm install
 npm run dev
-# App available at http://localhost:5173
+# http://localhost:5173
 ```
 
 ---
 
-## 📡 API Reference
+## Environment variables
+
+Copy `backend/.env.example` to `backend/.env` and fill in the values.
+
+| Variable | Required | Default | Description |
+|---|---|---|---|
+| `SECRET_KEY` | Yes | — | JWT signing secret. Generate with `python -c "import secrets; print(secrets.token_hex(32))"` |
+| `DATABASE_URL` | No | `sqlite+aiosqlite:///./healthcopilot.db` | Swap for PostgreSQL in production |
+| `KAGGLE_USERNAME` | Training only | — | Your Kaggle username |
+| `KAGGLE_KEY` | Training only | — | Your Kaggle API key (from kaggle.com/settings → API) |
+| `API_V1_STR` | No | `/api/v1` | API route prefix |
+
+---
+
+## API
 
 Base URL: `http://localhost:8000/api/v1`
 
-### Symptom Prediction
+All endpoints accept and return JSON. See `http://localhost:8000/docs` for the interactive Swagger UI.
 
-```http
-POST /predict/
-Content-Type: application/json
+### `POST /predict/`
 
-{
-  "symptoms": "cough fever runny nose sore throat"
-}
-```
-
-**Response:**
 ```json
+// Request
+{ "symptoms": "fever headache runny nose sore throat" }
+
+// Response
 {
   "disease": "Common Cold",
   "confidence": 0.72,
   "specialist": "General Physician",
   "differentials": [
     { "disease": "Influenza", "confidence": 0.15 },
-    { "disease": "Bronchial Asthma", "confidence": 0.08 }
+    { "disease": "Allergy",   "confidence": 0.08 }
   ],
   "model": "local_rf_v1"
 }
 ```
 
-### AI Chat
+### `POST /chat/`
 
-```http
-POST /chat/
-Content-Type: application/json
-
-{
-  "message": "What are the symptoms of diabetes?"
-}
-```
-
-**Response:**
 ```json
-{
-  "response": "Common symptoms of diabetes include frequent urination..."
-}
+// Request
+{ "message": "What are the symptoms of diabetes?" }
+
+// Response
+{ "response": "Common symptoms include frequent urination, excessive thirst..." }
 ```
 
-### Medical Report OCR
+### `POST /upload/`
 
-```http
-POST /upload/
-Content-Type: multipart/form-data
+Multipart form upload. Field name: `file`. Accepted types: PDF, JPG, PNG.
 
-file: <PDF, JPG, or PNG>
-```
-
-**Response:**
 ```json
+// Response
 {
   "extracted_text": "...",
-  "summary": "Document contains: Complete Blood Count. Found 2 potentially flagged values.",
+  "summary": "Document contains: CBC. Found 2 flagged values.",
   "method": "pdfplumber"
 }
 ```
 
-### Health Check
+### `GET /health`
 
-```http
-GET /health
-```
-
-**Response:**
 ```json
 {
   "status": "ok",
   "symptom_model": { "loaded": true, "n_classes": 49, "accuracy": 0.9956 },
-  "chat_engine": { "loaded": true }
+  "chat_engine":   { "loaded": true }
 }
 ```
 
 ---
 
-## 🧪 Symptom Input Tips
+## Symptom input tips
 
-The AI understands **natural language** — you can describe symptoms conversationally:
+The model was trained on structured medical terms (`continuous_sneezing`, `high_fever`, etc.), but a normalizer layer translates plain English before inference. More symptoms = higher confidence. Some examples:
 
-| You type | AI understands |
+| Input | Interpreted as |
 |---|---|
-| "water from nose, sour neck" | `runny_nose continuous_sneezing congestion throat_irritation` |
-| "chest pain arm pain sweating" | `chest_pain sweating` |
-| "loose motion, stomach ache" | `diarrhoea stomach_pain` |
-
-**Better accuracy tips:**
-- Add more symptoms for higher confidence
-- Include duration ("for 3 days"), severity ("severe"), and modifiers ("worse at night")
-- Use the **Quick Select** buttons to add common symptoms fast
+| `runny nose, sore throat, mild fever` | `runny_nose continuous_sneezing throat_irritation high_fever chills` |
+| `chest pain, arm pain, sweating` | `chest_pain sweating` → Heart attack |
+| `loose motion, stomach ache, vomiting` | `diarrhoea stomach_pain vomiting` → Gastroenteritis |
 
 ---
 
-## 🛠️ Development
+## Contributing
 
-### Running Tests
+See [CONTRIBUTING.md](CONTRIBUTING.md) for setup instructions, coding standards, and the PR process.
 
-```bash
-# Backend
-cd backend
-python -m pytest
-
-# Frontend
-cd frontend
-npm test
-```
-
-### Retraining the Model
-
-```bash
-cd backend
-python scripts/train.py
-# Then restart uvicorn
-```
-
-### Environment Variables Reference
-
-| Variable | Default | Description |
-|---|---|---|
-| `PROJECT_NAME` | `HealthCopilot AI` | API title |
-| `API_V1_STR` | `/api/v1` | API route prefix |
-| `SECRET_KEY` | *(required)* | JWT signing secret |
-| `DATABASE_URL` | `sqlite+aiosqlite:///./healthcopilot.db` | Database URL |
-| `KAGGLE_USERNAME` | *(required for training)* | Kaggle username |
-| `KAGGLE_KEY` | *(required for training)* | Kaggle API key |
+Short version: fork → branch → commit (using [Conventional Commits](https://www.conventionalcommits.org/)) → PR.
 
 ---
 
-## 🗺️ Roadmap
+## Roadmap
 
-- [ ] **v1.1** — Patient history persistence (save predictions to profile)
-- [ ] **v1.2** — Multi-language support (Hindi, Spanish, French)
-- [ ] **v1.3** — Drug interaction checker
-- [ ] **v2.0** — Fine-tuned LLM for richer conversational diagnosis
-- [ ] **v2.1** — Wearable device data integration (heart rate, SpO2)
-- [ ] **v2.2** — Telemedicine appointment booking integration
-
----
-
-## 🤝 Contributing
-
-We love contributions! Please read our [Contributing Guide](CONTRIBUTING.md) to get started.
-
-Quick steps:
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feat/amazing-feature`)
-3. Commit your changes (`git commit -m 'feat: add amazing feature'`)
-4. Push to the branch (`git push origin feat/amazing-feature`)
-5. Open a Pull Request
-
-See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines.
+- [ ] Persistent user history (save predictions to account)
+- [ ] More diseases and symptom coverage in the classifier
+- [ ] Hindi and Spanish language support
+- [ ] Docker Compose setup for one-command deployment
+- [ ] Fine-tuned small LLM for the chat engine
 
 ---
 
-## 📦 Tech Stack
+## License
 
-**Frontend**
-- React 18 + TypeScript
-- Vite 8
-- React Router v6
-- Vanilla CSS (custom design system)
-
-**Backend**
-- FastAPI 0.115
-- SQLModel + SQLAlchemy (async)
-- SQLite (dev) / PostgreSQL (prod)
-- Pydantic v2
-- JWT authentication
-
-**AI / ML**
-- scikit-learn (Random Forest classifier)
-- NLTK (text processing)
-- sentence-transformers (semantic embeddings)
-- FAISS (vector similarity search)
-- pdfplumber (PDF extraction)
-- EasyOCR (image OCR)
-- Kaggle API (dataset download)
-
----
-
-## 📄 License
-
-Distributed under the **MIT License**. See [LICENSE](LICENSE) for more information.
-
----
-
-## 👏 Acknowledgements
-
-- [Kaggle — Disease Symptom Dataset](https://www.kaggle.com/datasets/itachi9604/disease-symptom-description-dataset) by itachi9604
-- [Kaggle — Symptom2Disease Dataset](https://www.kaggle.com/datasets/niyarrbarman/symptom2disease) by niyarrbarman
-- [sentence-transformers](https://www.sbert.net/) — `all-MiniLM-L6-v2`
-- [FastAPI](https://fastapi.tiangolo.com/) by Sebastián Ramírez
-- [scikit-learn](https://scikit-learn.org/) — The Machine Learning team
-
----
-
-<div align="center">
-Made with ❤️ by <a href="https://github.com/ashutoshpatraa">Ashutosh Patra</a>
-<br><br>
-<a href="https://github.com/ashutoshpatraa/healthcopilot-ai/stargazers">⭐ Star this project if it helped you!</a>
-</div>
+[MIT](LICENSE) — Ashutosh Patra, 2026
