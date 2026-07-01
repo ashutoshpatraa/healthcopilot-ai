@@ -20,6 +20,10 @@ HealthCopilot AI is a production-grade AI healthcare copilot built with modern A
 - **Design System Implementation**: Refactored the UI to exactly match the Stitch MCP design system, utilizing a strict Brutalist aesthetic, custom UI components (`Button`, `Card`, `Toast`, `Input`), and modern layout practices.
 - **Performance & Accessibility**: Introduced `React.lazy` for optimized routing, implemented screen reader support (ARIA labels) across all pages, and cleaned up lint warnings.
 
+## Admin Access & Authentication
+- **Frontend (Demo Mode)**: The frontend authentication (`/auth`) is currently running in a UI-simulated mode. **You can log in with any email and password** to access the dashboard and explore the interface.
+- **Backend (API)**: The backend fully supports secure JWT authentication (`/api/v1/auth/login` and `/api/v1/auth/register`) with an SQLite database. You can register an admin user via the API docs (`http://localhost:8000/docs`). Front-to-back wiring is pending.
+
 ## Getting Started
 
 ### Backend
