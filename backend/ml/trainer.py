@@ -148,18 +148,42 @@ def _load_symptom_dataset() -> pd.DataFrame:
             col_map[c] = c.strip().lower().replace(" ", "_")
     df = df.rename(columns=col_map)
 
+    import random
+    random.seed(42)
+    
     symptom_cols = [c for c in df.columns if c != "disease"]
-    df["symptoms_text"] = df[symptom_cols].apply(
-        lambda row: " ".join(
+    df["disease"] = df["disease"].str.strip()
+    
+    # Collect all unique symptoms for each disease
+    disease_symptoms = {}
+    for _, row in df.iterrows():
+        disease = row["disease"]
+        symptoms = [
             str(v).strip().replace("_", " ").lower()
-            for v in row
+            for v in row[symptom_cols]
             if pd.notna(v) and str(v).strip() not in ("", "nan")
-        ),
-        axis=1,
-    )
-    result = df[["disease", "symptoms_text"]].copy()
-    result["disease"] = result["disease"].str.strip()
-    logger.info("Loaded itachi9604: %d rows", len(result))
+        ]
+        if disease not in disease_symptoms:
+            disease_symptoms[disease] = set()
+        disease_symptoms[disease].update(symptoms)
+        
+    augmented_rows = []
+    for disease, sym_set in disease_symptoms.items():
+        sym_list = list(sym_set)
+        if not sym_list:
+            continue
+            
+        # Add the full list
+        augmented_rows.append({"disease": disease, "symptoms_text": " ".join(sym_list)})
+        
+        # Generate exactly 200 subsets per disease to perfectly balance the dataset
+        for _ in range(200):
+            k = random.randint(min(2, len(sym_list)), max(2, min(5, len(sym_list))))
+            subset = random.sample(sym_list, k)
+            augmented_rows.append({"disease": disease, "symptoms_text": " ".join(subset)})
+            
+    result = pd.DataFrame(augmented_rows).drop_duplicates()
+    logger.info("Loaded itachi9604 (with augmentation): %d rows", len(result))
     return result
 
 
@@ -241,13 +265,13 @@ def train_model() -> dict:
     """Train TF-IDF + RandomForest pipeline on combined datasets."""
     logger.info("Loading datasets …")
     df1 = _load_symptom_dataset()
-    df2 = _load_symptom2disease()
-    df  = pd.concat([df1, df2], ignore_index=True)
-
-    # Fall back to built-in data if no Kaggle data available
-    if len(df) < 50:
-        logger.warning("Insufficient data from Kaggle (%d rows). Using built-in dataset.", len(df))
-        df = _builtin_dataset()
+    df3 = _builtin_dataset()
+    
+    # Normalize built-in dataset to match medical vocabulary where applicable
+    from ml.symptom_normalizer import normalize
+    df3["symptoms_text"] = df3["symptoms_text"].apply(normalize)
+    
+    df = pd.concat([df1, df3], ignore_index=True)
 
     df = df.dropna(subset=["disease", "symptoms_text"])
     df = df[df["symptoms_text"].str.strip() != ""]
