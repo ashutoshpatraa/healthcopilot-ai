@@ -100,6 +100,18 @@ class SymptomPredictor:
             for i in top3_idx
         ]
 
+        # If model is not confident enough, be honest rather than guessing
+        LOW_CONFIDENCE_THRESHOLD = 0.20
+        if confidence < LOW_CONFIDENCE_THRESHOLD:
+            return {
+                "disease": "Symptoms unclear — please describe more specifically",
+                "confidence": round(confidence, 4),
+                "specialist": "General Physician",
+                "differentials": differentials,
+                "model": "local_rf_v1",
+                "low_confidence": True,
+            }
+
         return {
             "disease": disease,
             "confidence": round(confidence, 4),

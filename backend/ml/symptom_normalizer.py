@@ -86,12 +86,32 @@ SYMPTOM_MAP: list[tuple[str, str]] = [
     ("stomach ache", "stomach_pain"),
     ("stomach pain", "stomach_pain"),
     ("belly pain", "stomach_pain abdominal_pain belly_pain"),
-    ("abdominal pain", "abdominal_pain"),
+    ("abdominal pain", "abdominal_pain belly_pain"),
+    ("stomach cramps", "stomach_pain cramps abdominal_pain"),
+    ("stomach bloating", "distention_of_abdomen passage_of_gases"),
+    ("bloated", "distention_of_abdomen passage_of_gases"),
+    ("gas pain", "passage_of_gases stomach_pain"),
+    ("farting", "passage_of_gases"),
+    ("flatulence", "passage_of_gases"),
+    # Stool descriptions → medical features
     ("black poop", "bloody_stool stomach_bleeding"),
     ("dark poop", "bloody_stool stomach_bleeding"),
+    ("green poop", "diarrhoea"),
+    ("yellow poop", "diarrhoea"),
+    ("pale poop", "yellowing_of_skin dark_urine"),
+    ("white poop", "yellowing_of_skin dark_urine"),
+    ("hard poop", "constipation"),
+    ("hard stool", "constipation"),
+    ("pellet poop", "constipation"),
+    ("watery poop", "diarrhoea"),
+    ("watery stool", "diarrhoea"),
+    ("runny poop", "diarrhoea"),
+    ("mucus in poop", "mucoid_sputum diarrhoea"),
     ("blood in poop", "bloody_stool"),
     ("blood in stool", "bloody_stool"),
     ("bloody poop", "bloody_stool"),
+    ("poop", "stomach_pain"),
+    ("stool", "stomach_pain"),
     ("nausea", "nausea"),
     ("feel like vomiting", "nausea vomiting"),
     ("want to vomit", "nausea vomiting"),
@@ -102,6 +122,9 @@ SYMPTOM_MAP: list[tuple[str, str]] = [
     ("loose stools", "diarrhoea"),
     ("loose motion", "diarrhoea"),
     ("constipation", "constipation"),
+    ("can't poop", "constipation"),
+    ("cant poop", "constipation"),
+    ("no bowel movement", "constipation"),
     ("heartburn", "acidity"),
     ("acid reflux", "acidity"),
     ("indigestion", "indigestion"),
@@ -177,8 +200,20 @@ def normalize(text: str) -> str:
             matched_terms.append(medical_terms)
             remaining = remaining.replace(phrase, " ").strip()
 
-    # Keep any leftover words (could still be valid training vocab)
-    remaining = re.sub(r"\s+", " ", remaining).strip()
+    # Strip English stopwords/filler from leftover text so they don't pollute TF-IDF
+    _STOPWORDS = {
+        "and", "or", "the", "a", "an", "my", "i", "have", "has", "had",
+        "with", "also", "some", "feel", "feeling", "am", "is", "are",
+        "been", "be", "its", "it", "in", "of", "for", "on", "at", "to",
+        "but", "not", "no", "since", "days", "day", "little", "bit",
+        "very", "really", "quite", "slightly", "bit", "kind", "lot",
+    }
+    remaining_words = [
+        w for w in remaining.split()
+        if w not in _STOPWORDS and len(w) > 1
+    ]
+    remaining = " ".join(remaining_words)
+
     all_terms = matched_terms + ([remaining] if remaining else [])
 
     result = " ".join(all_terms)
