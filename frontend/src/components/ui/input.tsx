@@ -1,35 +1,57 @@
-import * as React from "react"
-import { cn } from "@/lib/utils"
+import React, { InputHTMLAttributes, TextareaHTMLAttributes } from 'react';
 
-export interface InputProps
-  extends React.InputHTMLAttributes<HTMLInputElement> {
-  label: string;
+interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
+  label?: string;
+  error?: string;
 }
 
-const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ className, type, label, id, ...props }, ref) => {
-    return (
-      <div className="flex flex-col brutal-input-container w-full">
-        <label 
-            htmlFor={id}
-            className="font-label-caps text-label-caps uppercase bg-primary text-white border-t-border-width border-x-border-width border-primary px-3 py-1 inline-block w-max transition-colors duration-200"
-        >
-            {label}
+export const Input = React.forwardRef<HTMLInputElement, InputProps>(({ label, error, className = '', id, ...props }, ref) => {
+  const inputId = id || (label ? label.toLowerCase().replace(/\s+/g, '-') : undefined);
+  
+  return (
+    <div className={`flex flex-col gap-2 ${className}`}>
+      {label && (
+        <label htmlFor={inputId} className="font-headline-md text-headline-md text-primary">
+          {label}
         </label>
-        <input
-            id={id}
-            type={type}
-            className={cn(
-            "w-full bg-surface-container-lowest border-border-width border-primary p-3 font-body-lg text-body-lg brutal-input transition-all duration-200 focus:outline-none focus:ring-0",
-            className
-            )}
-            ref={ref}
-            {...props}
-        />
-      </div>
-    )
-  }
-)
-Input.displayName = "Input"
+      )}
+      <input
+        id={inputId}
+        ref={ref}
+        className={`bg-white text-primary font-body-lg text-body-lg brutalist-border p-4 focus:outline-none focus:border-secondary-container focus:ring-0 ${error ? 'border-[#FF4D4D]' : ''}`}
+        {...props}
+      />
+      {error && <span className="font-label-caps text-label-caps text-[#FF4D4D]">{error}</span>}
+    </div>
+  );
+});
 
-export { Input }
+Input.displayName = 'Input';
+
+interface TextareaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
+  label?: string;
+  error?: string;
+}
+
+export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(({ label, error, className = '', id, ...props }, ref) => {
+  const textareaId = id || (label ? label.toLowerCase().replace(/\s+/g, '-') : undefined);
+
+  return (
+    <div className={`flex flex-col gap-2 ${className}`}>
+      {label && (
+        <label htmlFor={textareaId} className="font-headline-md text-headline-md text-primary">
+          {label}
+        </label>
+      )}
+      <textarea
+        id={textareaId}
+        ref={ref}
+        className={`bg-white text-primary font-body-lg text-body-lg brutalist-border p-4 focus:outline-none focus:border-secondary-container focus:ring-0 resize-none ${error ? 'border-[#FF4D4D]' : ''}`}
+        {...props}
+      />
+      {error && <span className="font-label-caps text-label-caps text-[#FF4D4D]">{error}</span>}
+    </div>
+  );
+});
+
+Textarea.displayName = 'Textarea';

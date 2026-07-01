@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { Button } from '../components/ui/Button';
+import { Input } from '../components/ui/Input';
 import { useNavigate } from 'react-router-dom';
 
 export default function Auth() {
@@ -38,7 +38,7 @@ export default function Auth() {
         ></div>
 
         {/* Authentication Card */}
-        <div className="w-full max-w-md bg-surface-container-lowest border-border-width border-primary p-8 brutal-shadow relative z-10">
+        <div className="w-full max-w-md bg-surface-container-lowest border-border-width border-primary p-8 brutalist-shadow relative z-10">
           <div className="mb-gutter text-center md:text-left">
             <h1 className="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg mb-2 uppercase border-b-border-width border-primary inline-block pb-2">
               {isLogin ? 'Authenticate' : 'Initialize'}
@@ -99,12 +99,12 @@ export default function Auth() {
 
           {/* Social Logins */}
           <div className="grid grid-cols-2 gap-4">
-            <Button variant="social" className="p-3 flex justify-center items-center">
-              <span className="material-symbols-outlined mr-2">person</span>
+            <Button variant="secondary" className="p-3 flex justify-center items-center">
+              <span className="material-symbols-outlined mr-2" aria-hidden="true">person</span>
               <span className="font-label-caps text-label-caps">GOOGLE</span>
             </Button>
-            <Button variant="social" className="p-3 flex justify-center items-center">
-              <span className="material-symbols-outlined mr-2">devices</span>
+            <Button variant="secondary" className="p-3 flex justify-center items-center">
+              <span className="material-symbols-outlined mr-2" aria-hidden="true">devices</span>
               <span className="font-label-caps text-label-caps">APPLE</span>
             </Button>
           </div>

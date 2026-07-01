@@ -1,12 +1,16 @@
 import React, { useState } from 'react';
 import Layout from '../components/Layout';
 import { useNavigate } from 'react-router-dom';
+import { Button } from '../components/ui/Button';
+import { Textarea } from '../components/ui/Input';
+import { useToast, Toast } from '../components/ui/Toast';
 
 export default function SymptomChecker() {
   const [description, setDescription] = useState('');
   const [selectedSymptoms, setSelectedSymptoms] = useState<string[]>([]);
   const [isEmergency, setIsEmergency] = useState(false);
   const navigate = useNavigate();
+  const { toast, showToast, hideToast } = useToast();
 
   const severeKeywords = ['chest pain', 'heart attack', 'stroke', 'bleeding', 'unconscious', 'emergency'];
 
@@ -35,15 +39,17 @@ export default function SymptomChecker() {
         body: JSON.stringify({ symptoms: description })
       });
       const data = await res.json();
-      alert("Prediction Output: " + JSON.stringify(data));
+      showToast("Prediction Output: " + JSON.stringify(data), 'success');
       // In a real app we would navigate to a result screen or update UI
-    } catch(err) {
-      alert("Failed to connect to backend");
+    } catch(error) {
+      console.error(error);
+      showToast("Failed to connect to backend", 'error');
     }
   };
 
   return (
     <Layout>
+      {toast && <Toast message={toast.message} type={toast.type} onClose={hideToast} />}
       <div className="flex-grow w-full flex flex-col gap-gutter max-w-screen-2xl">
         {/* Emergency Banner (Hidden by default, shown via state if needed) */}
         {isEmergency && (
@@ -52,9 +58,9 @@ export default function SymptomChecker() {
               <span className="material-symbols-outlined text-3xl" style={{ fontVariationSettings: "'FILL' 1" }}>error</span>
               <span className="font-headline-md text-headline-md font-bold uppercase tracking-widest">CRITICAL SYMPTOMS DETECTED</span>
             </div>
-            <button className="bg-primary text-white font-label-caps text-label-caps px-4 py-2 brutalist-border shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-[6px] active:translate-y-[6px] transition-all hover:bg-opacity-90 whitespace-nowrap">
+            <Button className="!bg-primary !text-white font-label-caps text-label-caps px-4 py-2 brutalist-border shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-[6px] active:translate-y-[6px] transition-all hover:bg-opacity-90 whitespace-nowrap normal-case">
               INITIATE EMERGENCY RESPONSE
-            </button>
+            </Button>
           </div>
         )}
 
@@ -76,17 +82,17 @@ export default function SymptomChecker() {
                 PRIMARY INPUT
               </div>
               <label className="font-headline-md text-headline-md font-bold text-primary flex items-center gap-2" htmlFor="condition-desc">
-                <span className="material-symbols-outlined">edit_note</span>
+                <span className="material-symbols-outlined" aria-hidden="true">edit_note</span>
                 Describe your condition...
               </label>
-              <textarea 
-                className="w-full bg-white text-primary font-body-lg text-body-lg brutalist-border p-4 focus:outline-none focus:border-secondary-container focus:ring-0 resize-none" 
+              <Textarea 
                 id="condition-desc" 
                 placeholder="E.g., I have been experiencing a sharp pain in my lower right abdomen for the past 48 hours..." 
                 rows={5}
                 value={description}
                 onChange={handleDescriptionChange}
-              ></textarea>
+                className="w-full"
+              />
             </div>
 
             {/* Chips Area */}
@@ -105,9 +111,9 @@ export default function SymptomChecker() {
                     {symp}
                   </button>
                 ))}
-                <button className="bg-surface-variant text-on-surface-variant font-data-mono text-data-mono px-4 py-2 border-2 border-dashed border-outline hover:bg-surface-dim transition-colors cursor-pointer flex items-center gap-1">
-                  <span className="material-symbols-outlined text-[16px]">add</span> Custom
-                </button>
+                <Button variant="ghost" aria-label="Add custom symptom" className="!bg-surface-variant !text-on-surface-variant font-data-mono text-data-mono !px-4 !py-2 border-2 border-dashed border-outline hover:!bg-surface-dim transition-colors cursor-pointer flex items-center gap-1 normal-case shadow-none">
+                  <span className="material-symbols-outlined text-[16px]" aria-hidden="true">add</span> Custom
+                </Button>
               </div>
             </div>
 
@@ -118,16 +124,16 @@ export default function SymptomChecker() {
                 <h3 className="font-headline-md text-headline-md font-bold text-primary">Upload Medical Reports</h3>
                 <p className="font-body-md text-body-md text-on-surface-variant">Drag and drop lab results, imaging, or previous diagnoses (PDF, JPG, PNG)</p>
               </div>
-              <button className="bg-white text-primary font-label-caps text-label-caps px-6 py-2 border-2 border-primary hover:bg-primary hover:text-white transition-colors">
+              <Button className="!bg-white !text-primary font-label-caps text-label-caps px-6 py-2 border-2 border-primary hover:!bg-primary hover:!text-white transition-colors shadow-none hover:shadow-none translate-x-0 translate-y-0 active:translate-x-0 active:translate-y-0 normal-case">
                 BROWSE FILES
-              </button>
+              </Button>
             </div>
 
             {/* Primary Action */}
-            <button onClick={executePrediction} className="bg-white text-primary font-headline-lg text-headline-lg font-bold p-6 brutalist-border shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[6px] hover:translate-y-[6px] transition-all w-full flex justify-between items-center group">
+            <Button onClick={executePrediction} className="!bg-white !text-primary font-headline-lg text-headline-lg font-bold p-6 brutalist-border shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[6px] hover:translate-y-[6px] transition-all w-full flex justify-between items-center group normal-case border-4">
               <span>EXECUTE PREDICTION</span>
-              <span className="material-symbols-outlined text-[40px] group-hover:translate-x-2 transition-transform">arrow_forward</span>
-            </button>
+              <span className="material-symbols-outlined text-[40px] group-hover:translate-x-2 transition-transform" aria-hidden="true">arrow_forward</span>
+            </Button>
           </div>
 
           {/* Right Column: Status & Info */}

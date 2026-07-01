@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
 import Layout from '../components/Layout';
+import { Button } from '../components/ui/Button';
 
 export default function AIConsult() {
   const [message, setMessage] = useState('');
@@ -28,6 +28,7 @@ export default function AIConsult() {
       const data = await res.json();
       setMessages(prev => [...prev, { role: 'system', text: data.response || "No response" }]);
     } catch (error) {
+      console.error(error);
       setMessages(prev => [...prev, { role: 'system', text: "Error connecting to AI Server." }]);
     }
   };
@@ -69,12 +70,12 @@ export default function AIConsult() {
               </div>
             </div>
             <div className="flex gap-2">
-              <button className="p-2 bg-surface text-primary border-4 border-primary shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:shadow-[6px_6px_0px_0px_#00E5FF] active:shadow-none active:translate-x-[6px] active:translate-y-[6px] transition-all" title="Export Log">
-                <span className="material-symbols-outlined">download</span>
-              </button>
-              <button className="p-2 bg-surface text-primary border-4 border-primary shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:shadow-[6px_6px_0px_0px_#00E5FF] active:shadow-none active:translate-x-[6px] active:translate-y-[6px] transition-all" title="Clear Context">
-                <span className="material-symbols-outlined">delete</span>
-              </button>
+              <Button variant="ghost" aria-label="Export Log" className="!p-2 bg-surface text-primary border-4 border-primary shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:shadow-[6px_6px_0px_0px_#00E5FF] active:shadow-none active:translate-x-[6px] active:translate-y-[6px]">
+                <span className="material-symbols-outlined" aria-hidden="true">download</span>
+              </Button>
+              <Button variant="ghost" aria-label="Clear Context" className="!p-2 bg-surface text-primary border-4 border-primary shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:shadow-[6px_6px_0px_0px_#00E5FF] active:shadow-none active:translate-x-[6px] active:translate-y-[6px]">
+                <span className="material-symbols-outlined" aria-hidden="true">delete</span>
+              </Button>
             </div>
           </div>
 
@@ -105,15 +106,15 @@ export default function AIConsult() {
           <div className="p-4 bg-surface-container border-t-4 border-primary shrink-0 overflow-x-auto whitespace-nowrap chat-scroll">
             <p className="font-label-caps text-label-caps text-on-surface-variant mb-2 inline-block w-full">SUGGESTED QUERIES:</p>
             <div className="flex gap-3">
-              <button onClick={() => setMessage('What are my risks?')} className="border-4 border-primary shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-[6px] active:translate-y-[6px] transition-all bg-surface text-primary py-2 px-4 font-body-md text-body-md hover:bg-secondary-container">
+              <Button type="button" onClick={() => setMessage('What are my risks?')} className="bg-surface text-primary font-body-md text-body-md normal-case hover:bg-secondary-container">
                 What are my risks?
-              </button>
-              <button onClick={() => setMessage('Interpret my last lab')} className="border-4 border-primary shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-[6px] active:translate-y-[6px] transition-all bg-surface text-primary py-2 px-4 font-body-md text-body-md hover:bg-secondary-container">
+              </Button>
+              <Button type="button" onClick={() => setMessage('Interpret my last lab')} className="bg-surface text-primary font-body-md text-body-md normal-case hover:bg-secondary-container">
                 Interpret my last lab
-              </button>
-              <button onClick={() => setMessage('Check drug interactions')} className="border-4 border-primary shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-[6px] active:translate-y-[6px] transition-all bg-surface text-primary py-2 px-4 font-body-md text-body-md hover:bg-secondary-container">
+              </Button>
+              <Button type="button" onClick={() => setMessage('Check drug interactions')} className="bg-surface text-primary font-body-md text-body-md normal-case hover:bg-secondary-container">
                 Check drug interactions
-              </button>
+              </Button>
             </div>
           </div>
 
@@ -129,9 +130,9 @@ export default function AIConsult() {
                   placeholder="Enter clinical query..." 
                 />
               </div>
-              <button type="submit" className="border-4 border-primary shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-[6px] active:translate-y-[6px] transition-all bg-primary text-secondary-container px-8 flex items-center justify-center hover:bg-secondary hover:text-white">
-                <span className="material-symbols-outlined text-3xl">send</span>
-              </button>
+              <Button type="submit" aria-label="Send Query" className="!bg-primary !text-secondary-container px-8 hover:!bg-secondary hover:!text-white">
+                <span className="material-symbols-outlined text-3xl" aria-hidden="true">send</span>
+              </Button>
             </form>
           </div>
         </section>

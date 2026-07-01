@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
 import Layout from '../components/Layout';
+import { Button } from '../components/ui/Button';
+import { useToast, Toast } from '../components/ui/Toast';
 
 export default function MedicalReports() {
   const [file, setFile] = useState<File | null>(null);
   const [uploadStatus, setUploadStatus] = useState<string>('');
+  const { toast, showToast, hideToast } = useToast();
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
@@ -21,14 +24,18 @@ export default function MedicalReports() {
         });
         await res.json();
         setUploadStatus('Extraction complete');
+        showToast('Extraction complete', 'success');
       } catch (err) {
+        console.error(err);
         setUploadStatus('Error uploading file');
+        showToast('Error uploading file', 'error');
       }
     }
   };
 
   return (
     <Layout mainClassName="flex-1 w-full md:ml-64 mt-20 md:mt-0 min-h-screen flex flex-col">
+      {toast && <Toast message={toast.message} type={toast.type} onClose={hideToast} />}
       {/* Header */}
       <header className="w-full px-container-margin py-container-margin border-b-border-width border-primary bg-surface z-10 sticky top-0 md:top-0">
         <h1 className="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-primary uppercase">RECORDS ARCHIVE & OCR ANALYSIS</h1>
@@ -93,8 +100,12 @@ export default function MedicalReports() {
             <div className="bg-primary text-white px-4 py-2 border-b-border-width border-primary flex justify-between items-center">
               <span className="font-data-mono text-data-mono uppercase">Extracted Data (OCR text)</span>
               <div className="flex gap-2">
-                <button className="text-secondary-container hover:text-white"><span className="material-symbols-outlined text-[20px]">content_copy</span></button>
-                <button className="text-secondary-container hover:text-white"><span className="material-symbols-outlined text-[20px]">download</span></button>
+                <Button variant="ghost" aria-label="Copy Data" className="!p-1 text-secondary-container hover:text-white border-none shadow-none">
+                  <span className="material-symbols-outlined text-[20px]" aria-hidden="true">content_copy</span>
+                </Button>
+                <Button variant="ghost" aria-label="Download Data" className="!p-1 text-secondary-container hover:text-white border-none shadow-none">
+                  <span className="material-symbols-outlined text-[20px]" aria-hidden="true">download</span>
+                </Button>
               </div>
             </div>
             <div className="flex-1 p-4 bg-surface-container-lowest overflow-y-auto">

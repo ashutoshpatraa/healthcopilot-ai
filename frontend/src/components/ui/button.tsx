@@ -1,46 +1,45 @@
-import * as React from "react"
-import { cn } from "@/lib/utils"
+import React, { ButtonHTMLAttributes } from 'react';
 
-export interface ButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: "default" | "cyan" | "destructive" | "ghost" | "social"
+interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+  variant?: 'primary' | 'secondary' | 'danger' | 'ghost';
+  fullWidth?: boolean;
+  className?: string;
+  icon?: string;
 }
 
-const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant = "default", ...props }, ref) => {
-    
-    let variantClasses = ""
-    switch(variant) {
-      case "default":
-        variantClasses = "bg-[#FFD500] text-primary border-border-width border-primary brutal-shadow-hover"
-        break
-      case "cyan":
-        variantClasses = "bg-secondary-container text-on-secondary-container border-border-width border-primary brutal-shadow-cyan-hover"
-        break
-      case "destructive":
-        variantClasses = "bg-error text-on-error border-border-width border-primary brutal-shadow-hover"
-        break
-      case "ghost":
-        variantClasses = "bg-transparent border-border-width border-primary brutal-shadow-hover"
-        break
-      case "social":
-        variantClasses = "bg-surface-container-lowest border-border-width border-primary hover:bg-surface-variant brutal-shadow-hover"
-        break
-    }
-
-    return (
-      <button
-        ref={ref}
-        className={cn(
-          "inline-flex items-center justify-center transition-all duration-100 disabled:opacity-50 disabled:pointer-events-none",
-          variantClasses,
-          className
-        )}
-        {...props}
-      />
-    )
+export const Button: React.FC<ButtonProps> = ({ 
+  children, 
+  variant = 'primary', 
+  fullWidth = false, 
+  className = '', 
+  icon,
+  ...props 
+}) => {
+  const baseClasses = "font-label-caps text-label-caps p-3 transition-all flex justify-center items-center gap-2 brutalist-border uppercase whitespace-nowrap";
+  const interactiveClasses = "brutalist-shadow active:translate-x-[6px] active:translate-y-[6px] active:shadow-none disabled:opacity-50 disabled:cursor-not-allowed";
+  
+  let variantClasses = '';
+  switch (variant) {
+    case 'primary':
+      variantClasses = `bg-primary text-white ${interactiveClasses}`;
+      break;
+    case 'secondary':
+      variantClasses = `bg-white text-primary hover:bg-secondary-container ${interactiveClasses}`;
+      break;
+    case 'danger':
+      variantClasses = `bg-[#FF4D4D] text-white hover:bg-opacity-90 ${interactiveClasses}`;
+      break;
+    case 'ghost':
+      variantClasses = "bg-transparent text-primary hover:bg-surface-variant shadow-none border-transparent hover:border-primary";
+      break;
   }
-)
-Button.displayName = "Button"
 
-export { Button }
+  const widthClass = fullWidth ? 'w-full' : '';
+
+  return (
+    <button className={`${baseClasses} ${variantClasses} ${widthClass} ${className}`} {...props}>
+      {icon && <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }} aria-hidden="true">{icon}</span>}
+      {children}
+    </button>
+  );
+};

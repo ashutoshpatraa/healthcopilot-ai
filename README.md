@@ -15,6 +15,11 @@ HealthCopilot AI is a production-grade AI healthcare copilot built with modern A
 - Predictive Symptom Checker
 - Analytics Dashboard
 
+## Recent Updates
+- **Frontend Audit & Polish**: The entire frontend has been audited and polished to meet production quality.
+- **Design System Implementation**: Refactored the UI to exactly match the Stitch MCP design system, utilizing a strict Brutalist aesthetic, custom UI components (`Button`, `Card`, `Toast`, `Input`), and modern layout practices.
+- **Performance & Accessibility**: Introduced `React.lazy` for optimized routing, implemented screen reader support (ARIA labels) across all pages, and cleaned up lint warnings.
+
 ## Getting Started
 
 ### Backend

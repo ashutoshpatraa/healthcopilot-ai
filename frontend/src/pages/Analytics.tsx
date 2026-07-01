@@ -1,4 +1,6 @@
 import Layout from '../components/Layout';
+import { Card } from '../components/ui/Card';
+import { Button } from '../components/ui/Button';
 
 export default function Analytics() {
   return (
@@ -10,28 +12,28 @@ export default function Analytics() {
 
       {/* KPI Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-gutter mb-12">
-        <div className="bg-surface p-6 brutalist-border ai-border-left flex flex-col justify-between h-40">
+        <Card className="ai-border-left flex flex-col justify-between h-40 !p-6">
           <span className="font-label-caps text-label-caps text-on-surface-variant uppercase">Total Scans Processed</span>
           <div className="font-headline-xl text-headline-xl text-primary">1,240</div>
-        </div>
-        <div className="bg-surface p-6 brutalist-border flex flex-col justify-between h-40">
+        </Card>
+        <Card className="flex flex-col justify-between h-40 !p-6">
           <span className="font-label-caps text-label-caps text-on-surface-variant uppercase">Active AI Consults</span>
           <div className="font-headline-xl text-headline-xl text-primary text-[#FF4D4D]">34</div>
-        </div>
-        <div className="bg-surface p-6 brutalist-border flex flex-col justify-between h-40">
+        </Card>
+        <Card className="flex flex-col justify-between h-40 !p-6">
           <span className="font-label-caps text-label-caps text-on-surface-variant uppercase">Risk Mitigation Rate</span>
           <div className="font-headline-xl text-headline-xl text-primary text-[#00C853]">88%</div>
-        </div>
-        <div className="bg-surface p-6 brutalist-border flex flex-col justify-between h-40">
+        </Card>
+        <Card className="flex flex-col justify-between h-40 !p-6">
           <span className="font-label-caps text-label-caps text-on-surface-variant uppercase">System Latency</span>
           <div className="font-headline-xl text-headline-xl text-primary text-[#FFD500]">12ms</div>
-        </div>
+        </Card>
       </div>
 
       {/* Main Charts Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-gutter mb-12">
         {/* Large Chart Span */}
-        <div className="lg:col-span-2 bg-surface brutalist-border p-6 h-96 flex flex-col">
+        <Card className="lg:col-span-2 h-96 flex flex-col !p-6">
           <div className="flex justify-between items-center mb-6">
             <h2 className="font-headline-md text-headline-md text-primary uppercase">Disease Trends</h2>
             <span className="font-data-mono text-data-mono bg-surface-variant px-2 py-1 brutalist-border border-b-2 border-r-2 text-xs">YTD 2024</span>
@@ -55,10 +57,10 @@ export default function Analytics() {
           <div className="flex justify-between mt-2 font-data-mono text-data-mono text-xs text-on-surface-variant">
             <span>Q1</span><span>Q2</span><span>Q3</span><span>Q4</span>
           </div>
-        </div>
+        </Card>
 
         {/* Secondary Metric */}
-        <div className="bg-surface brutalist-border ai-border-left p-6 h-96 flex flex-col">
+        <Card className="ai-border-left h-96 flex flex-col !p-6">
           <h2 className="font-headline-md text-headline-md text-primary uppercase mb-6">Symptom Frequency</h2>
           <div className="flex-1 flex flex-col justify-end gap-4">
             <div className="flex items-center gap-4">
@@ -86,7 +88,7 @@ export default function Analytics() {
               </div>
             </div>
           </div>
-        </div>
+        </Card>
       </div>
 
       {/* Bottom Section */}
@@ -105,14 +107,12 @@ export default function Analytics() {
           </div>
         </div>
 
-        <div className="bg-surface p-6 brutalist-border flex flex-col justify-center items-center text-center">
-          <span className="material-symbols-outlined text-6xl text-primary mb-4" style={{ fontVariationSettings: "'FILL' 1" }}>memory</span>
+        <Card className="flex flex-col justify-center items-center text-center !p-6">
+          <span className="material-symbols-outlined text-6xl text-primary mb-4" style={{ fontVariationSettings: "'FILL' 1" }} aria-hidden="true">memory</span>
           <h3 className="font-headline-md text-headline-md text-primary uppercase mb-2">Generate Report</h3>
           <p className="font-body-md text-body-md text-on-surface-variant mb-6">Compile current analytic models into PDF format.</p>
-          <button className="bg-primary text-white font-label-caps text-label-caps py-3 px-8 border-4 border-primary shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:shadow-[6px_6px_0px_0px_#00E5FF] active:shadow-none active:translate-x-[6px] active:translate-y-[6px] transition-all">
-            COMPILE DATA
-          </button>
-        </div>
+          <Button>COMPILE DATA</Button>
+        </Card>
       </div>
     </Layout>
   );
