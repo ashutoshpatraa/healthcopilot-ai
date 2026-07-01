@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
 
+import { StatCard } from '../components/StatCard'
 import { fetchDashboard } from '../services/api'
 import type { DashboardSummary } from '../types'
-import { StatCard } from '../components/StatCard'
 
 const fallback: DashboardSummary = { total_predictions: 0, total_reports: 0, total_notifications: 0, risk_trend: [] }
 

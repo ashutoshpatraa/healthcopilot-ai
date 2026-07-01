@@ -1,8 +1,8 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
 
 import { Shell } from './components/Shell'
-import { DashboardPage } from './pages/DashboardPage'
 import { ChatPage } from './pages/ChatPage'
+import { DashboardPage } from './pages/DashboardPage'
 import { LandingPage } from './pages/LandingPage'
 import { ProfilePage } from './pages/ProfilePage'
 import { SymptomCheckerPage } from './pages/SymptomCheckerPage'

@@ -1,3 +1,5 @@
+import type { ReactNode } from 'react'
+
 import { NavLink } from 'react-router-dom'
 
 const links = [
@@ -8,7 +10,7 @@ const links = [
   { to: '/profile', label: 'Profile' },
 ]
 
-export function Shell({ children }: { children: React.ReactNode }) {
+export function Shell({ children }: { children: ReactNode }) {
   return (
     <div className="app-shell">
       <aside className="sidebar">
