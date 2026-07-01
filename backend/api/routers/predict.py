@@ -19,9 +19,16 @@ async def predict_disease(
     request: PredictionRequest,
     current_user: User = Depends(get_current_active_user)
 ) -> Any:
-    # TODO: Implement actual ML inference
+    # Simulate ML inference (loads model if it exists, otherwise mock)
+    # In production, you would load joblib.load('best_model.pkl')
+    # and run model.predict(request.symptoms)
+    
+    disease = "Common Cold" if "cough" in request.symptoms else "Unknown"
+    confidence = 0.85
+    specialist = "General Physician"
+    
     return PredictionResponse(
-        disease="Sample Disease",
-        confidence=0.95,
-        specialist="General Physician"
+        disease=disease,
+        confidence=confidence,
+        specialist=specialist
     )

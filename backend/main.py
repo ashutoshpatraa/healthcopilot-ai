@@ -3,6 +3,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from core.config import settings
 from database import engine, Base
+import models
 from api.routers import auth, predict, chat, upload
 
 @asynccontextmanager

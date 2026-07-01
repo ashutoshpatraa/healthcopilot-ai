@@ -17,7 +17,11 @@ async def chat_with_ai(
     request: ChatRequest,
     current_user: User = Depends(get_current_active_user)
 ) -> Any:
-    # TODO: Implement RAG and LLM integration
-    return ChatResponse(
-        reply="Hello, I am HealthCopilot AI. How can I help you today?"
-    )
+    # Simulated LLM interaction
+    user_message = request.message.lower()
+    if "symptom" in user_message:
+        reply = "I can help with that. Please describe your symptoms in detail."
+    else:
+        reply = "Hello, I am HealthCopilot AI. How can I assist you with your health today?"
+        
+    return ChatResponse(reply=reply)
