@@ -26,6 +26,18 @@ def authenticate_user(db: Session, email: str, password: str) -> User | None:
     return user
 
 
+def ensure_demo_user(db: Session) -> User:
+    user = db.query(User).order_by(User.id.asc()).first()
+    if user is not None:
+        return user
+
+    user = User(email="demo@healthcopilot.ai", full_name="Demo User", hashed_password=hash_password("ChangeMe123!"))
+    db.add(user)
+    db.commit()
+    db.refresh(user)
+    return user
+
+
 def issue_token(subject: str, minutes: int | None = None) -> str:
     settings = get_settings()
     duration = timedelta(minutes=minutes or settings.access_token_expire_minutes)
