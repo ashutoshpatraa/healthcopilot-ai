@@ -83,6 +83,7 @@ SYMPTOM_MAP: list[tuple[str, str]] = [
     # Stomach / GI
     ("tummy ache", "stomach_pain belly_pain abdominal_pain"),
     ("tummy pain", "stomach_pain belly_pain abdominal_pain"),
+    ("tummy", "stomach_pain belly_pain"),
     ("stomach ache", "stomach_pain"),
     ("stomach pain", "stomach_pain"),
     ("belly pain", "stomach_pain abdominal_pain belly_pain"),
