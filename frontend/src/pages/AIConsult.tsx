@@ -7,7 +7,7 @@ export default function AIConsult() {
   const [messages, setMessages] = useState([
     {
       role: 'system',
-      text: 'Patient data loaded. I am analyzing the latest CBC panel and vitals from the past 48 hours.\n\nHow would you like to proceed with the analysis?'
+      text: 'HealthCopilot AI is ready. Describe your symptoms or ask a health question to get started.\n\n[Note] This is not a substitute for professional medical advice.'
     }
   ]);
 
@@ -43,18 +43,11 @@ export default function AIConsult() {
         <aside className="hidden lg:flex flex-col w-72 bg-surface border-4 border-primary p-4 shrink-0 overflow-y-auto chat-scroll">
           <h2 className="font-headline-md text-headline-md text-primary mb-6 border-b-4 border-primary pb-2">SESSION LOG</h2>
           <div className="flex flex-col gap-4">
-            <div className="p-3 border-2 border-primary bg-surface-container cursor-pointer hover:bg-secondary-container transition-colors">
-              <p className="font-label-caps text-label-caps text-on-surface-variant mb-1">TODAY, 10:42 AM</p>
-              <p className="font-body-md text-body-md font-semibold truncate">Elevated heart rate analysis</p>
+            <div className="p-3 border-2 border-primary bg-surface-container">
+              <p className="font-label-caps text-label-caps text-on-surface-variant mb-1">CURRENT SESSION</p>
+              <p className="font-body-md text-body-md font-semibold truncate">{messages.length > 1 ? messages[messages.length - 1].text.slice(0, 40) + '...' : 'New consultation'}</p>
             </div>
-            <div className="p-3 border-2 border-primary bg-surface-container cursor-pointer hover:bg-secondary-container transition-colors">
-              <p className="font-label-caps text-label-caps text-on-surface-variant mb-1">YESTERDAY</p>
-              <p className="font-body-md text-body-md font-semibold truncate">CBC Lab Results Interpretation</p>
-            </div>
-            <div className="p-3 border-2 border-primary bg-surface-container cursor-pointer hover:bg-secondary-container transition-colors opacity-70">
-              <p className="font-label-caps text-label-caps text-on-surface-variant mb-1">OCT 12</p>
-              <p className="font-body-md text-body-md font-semibold truncate">Medication interaction check</p>
-            </div>
+            <p className="font-data-mono text-data-mono text-on-surface-variant text-center mt-4">Session history is stored in the database.</p>
           </div>
         </aside>
 
@@ -68,7 +61,7 @@ export default function AIConsult() {
               </div>
               <div>
                 <h3 className="font-headline-md text-headline-md m-0 leading-tight">DIAGNOSTIC AI</h3>
-                <span className="font-data-mono text-data-mono text-secondary px-2 border-2 border-secondary bg-surface-container inline-block mt-1">SESSION ID: 94X-ALFA</span>
+                <span className="font-data-mono text-data-mono text-secondary px-2 border-2 border-secondary bg-surface-container inline-block mt-1">LIVE SESSION</span>
               </div>
             </div>
             <div className="flex gap-2">

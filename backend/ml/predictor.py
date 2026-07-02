@@ -101,7 +101,7 @@ class SymptomPredictor:
         ]
 
         # If model is not confident enough, be honest rather than guessing
-        LOW_CONFIDENCE_THRESHOLD = 0.20
+        LOW_CONFIDENCE_THRESHOLD = 0.35
         if confidence < LOW_CONFIDENCE_THRESHOLD:
             return {
                 "disease": "Symptoms unclear — please describe more specifically",

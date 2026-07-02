@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from core.config import settings
 from database import engine, Base
 import models
-from api.routers import auth, predict, chat, upload
+from api.routers import auth, predict, chat, upload, analytics
 from ml.predictor import predictor
 from ml.chat_engine import chat_engine
 
@@ -40,6 +40,7 @@ app.include_router(auth.router, prefix=f"{settings.API_V1_STR}/auth", tags=["aut
 app.include_router(predict.router, prefix=f"{settings.API_V1_STR}/predict", tags=["predict"])
 app.include_router(chat.router, prefix=f"{settings.API_V1_STR}/chat", tags=["chat"])
 app.include_router(upload.router, prefix=f"{settings.API_V1_STR}/upload", tags=["upload"])
+app.include_router(analytics.router, prefix=f"{settings.API_V1_STR}/analytics", tags=["analytics"])
 
 @app.get("/")
 def root():

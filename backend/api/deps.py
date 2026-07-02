@@ -43,3 +43,26 @@ async def get_current_active_user(
     if not current_user.is_active:
         raise HTTPException(status_code=400, detail="Inactive user")
     return current_user
+
+
+oauth2_scheme_optional = OAuth2PasswordBearer(tokenUrl=f"{settings.API_V1_STR}/auth/login", auto_error=False)
+
+async def get_optional_current_user(
+    db: Annotated[AsyncSession, Depends(get_db)],
+    token: Annotated[str | None, Depends(oauth2_scheme_optional)]
+) -> User | None:
+    if not token:
+        return None
+    try:
+        payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
+        user_id: str = payload.get("sub")
+        if user_id is None:
+            return None
+        token_data = TokenPayload(sub=user_id)
+    except JWTError:
+        return None
+
+    stmt = select(User).where(User.id == int(token_data.sub))
+    result = await db.execute(stmt)
+    return result.scalar_one_or_none()
+

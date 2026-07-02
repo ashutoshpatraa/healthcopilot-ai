@@ -1,33 +1,77 @@
-# Python
+# ============================================================
+# HealthCopilot AI — .gitignore
+# ============================================================
+
+# ─── Python ─────────────────────────────────────────────────
 __pycache__/
 *.py[cod]
 *$py.class
 *.pyc
-.pytest_cache/
+*.pyo
+*.pyd
+.Python
+*.so
 
 # Virtual environments
-.env
 .venv/
 venv/
 env/
 ENV/
+.env/
 
-# Database
+# ─── Environment & Secrets ──────────────────────────────────
+# NEVER commit secrets or credentials
+.env
+.env.*
+!.env.example
+backend/.env
+frontend/.env
+kaggle.json
+*.pem
+*.key
+*.secret
+*.credential
+
+# ─── Databases ──────────────────────────────────────────────
 *.db
+*.sqlite
 *.sqlite3
+*.db-journal
+*.db-shm
+*.db-wal
 
-# ML artefacts — trained models and datasets are not committed
-# Run `python backend/scripts/train.py` to generate them locally
+# ─── ML Artifacts ───────────────────────────────────────────
+# Trained models and datasets are generated locally
+# Run: python backend/scripts/train.py
 datasets/
 trained_models/
+*.pkl
+*.h5
+*.pt
+*.pth
+*.onnx
+*.joblib
 
-# Node / frontend
+# ─── Testing & Coverage ─────────────────────────────────────
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+coverage.xml
+htmlcov/
+.tox/
+nosetests.xml
+
+# ─── Node / Frontend ────────────────────────────────────────
 node_modules/
 dist/
 dist-ssr/
 *.local
+.vite/
+.turbo/
+.cache/
 
-# IDE
+# ─── IDE & Editor ───────────────────────────────────────────
 .vscode/
 .idea/
 *.suo
@@ -35,11 +79,28 @@ dist-ssr/
 *.njsproj
 *.sln
 *.sw?
+*.swp
+*.swo
+.history/
 
-# OS
+# ─── OS ─────────────────────────────────────────────────────
 .DS_Store
 Thumbs.db
 ehthumbs.db
+desktop.ini
 
-# Logs
+# ─── Uploads & Generated Files ──────────────────────────────
+uploads/
+backend/uploads/
 *.log
+logs/
+temp/
+tmp/
+*.tmp
+*.bak
+*.backup
+
+# ─── Build Artifacts ────────────────────────────────────────
+build/
+*.egg-info/
+.eggs/

@@ -234,19 +234,25 @@ export default function SymptomChecker() {
               <div className="flex flex-col gap-2 font-data-mono text-data-mono">
                 <div className="flex justify-between border-b border-surface-tint border-opacity-50 pb-1">
                   <span className="text-on-primary-container">Model:</span>
-                  <span className="text-secondary-fixed font-bold">MED_X_7B</span>
+                  <span className="text-secondary-fixed font-bold">
+                    {result ? (result.model === 'local_rf_v1' ? 'RF_CLASSIFIER_V1' : 'RULE_BASED') : 'STANDBY'}
+                  </span>
                 </div>
                 <div className="flex justify-between border-b border-surface-tint border-opacity-50 pb-1">
-                  <span className="text-on-primary-container">Confidence Threshold:</span>
-                  <span className="text-white">85.0%</span>
+                  <span className="text-on-primary-container">Last Confidence:</span>
+                  <span className="text-white">
+                    {result ? `${(result.confidence * 100).toFixed(1)}%` : '--'}
+                  </span>
                 </div>
                 <div className="flex justify-between border-b border-surface-tint border-opacity-50 pb-1">
-                  <span className="text-on-primary-container">Data Sources:</span>
-                  <span className="text-white">Active</span>
+                  <span className="text-on-primary-container">Disease Classes:</span>
+                  <span className="text-white">49</span>
                 </div>
                 <div className="flex justify-between mt-2">
                   <span className="text-on-primary-container">System Readiness:</span>
-                  <span className="text-secondary-fixed bg-secondary-fixed/20 px-2 py-0.5 border border-secondary-fixed">OPTIMAL</span>
+                  <span className="text-secondary-fixed bg-secondary-fixed/20 px-2 py-0.5 border border-secondary-fixed">
+                    {isLoading ? 'PROCESSING' : 'ONLINE'}
+                  </span>
                 </div>
               </div>
             </div>

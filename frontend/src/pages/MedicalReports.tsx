@@ -3,10 +3,17 @@ import Layout from '../components/Layout';
 import { Button } from '../components/ui/Button';
 import { useToast, Toast } from '../components/ui/Toast';
 
+interface UploadResult {
+  summary: string;
+  extracted_text: string;
+  method: string;
+}
+
 export default function MedicalReports() {
   const [file, setFile] = useState<File | null>(null);
   const [uploadStatus, setUploadStatus] = useState<string>('');
   const [isUploading, setIsUploading] = useState(false);
+  const [result, setResult] = useState<UploadResult | null>(null);
   const { toast, showToast, hideToast } = useToast();
 
   const handleUpload = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -15,6 +22,7 @@ export default function MedicalReports() {
       setFile(selectedFile);
       setUploadStatus('Uploading...');
       setIsUploading(true);
+      setResult(null);
 
       const formData = new FormData();
       formData.append('file', selectedFile);
@@ -25,7 +33,8 @@ export default function MedicalReports() {
           method: 'POST',
           body: formData
         });
-        await res.json();
+        const data = await res.json();
+        setResult(data);
         setUploadStatus('Extraction complete');
         showToast('Extraction complete', 'success');
       } catch (err) {
@@ -69,130 +78,56 @@ export default function MedicalReports() {
           </div>
         </div>
 
-        {/* AI Summary Banner */}
-        <div className="col-span-4 md:col-span-12 bg-secondary-container border-border-width border-primary p-gutter relative overflow-hidden shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] mt-4">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-primary opacity-5 rounded-full -mr-16 -mt-16 pointer-events-none"></div>
-          <div className="flex items-start gap-4">
-            <span className="material-symbols-outlined text-[32px] text-primary mt-1">auto_awesome</span>
-            <div>
-              <h3 className="font-headline-md text-headline-md text-primary uppercase mb-2">AI Extraction Summary</h3>
-              <p className="font-body-lg text-body-lg text-primary mb-4">Latest document (Lab_Results_0423.pdf) processed successfully. Detected metabolic panel data. Glucose levels indicate observation required. No critical flags triggered.</p>
-              <div className="flex gap-2 flex-wrap">
-                <span className="bg-primary text-secondary-container px-2 py-1 font-data-mono text-data-mono uppercase border-2 border-primary">Status: Validated</span>
-                <span className="bg-surface text-primary px-2 py-1 font-data-mono text-data-mono uppercase border-2 border-primary">Confidence: 98.4%</span>
+        {/* AI Summary Banner — only show after upload */}
+        {result && (
+          <div className="col-span-4 md:col-span-12 bg-secondary-container border-border-width border-primary p-gutter relative overflow-hidden shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] mt-4">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-primary opacity-5 rounded-full -mr-16 -mt-16 pointer-events-none"></div>
+            <div className="flex items-start gap-4">
+              <span className="material-symbols-outlined text-[32px] text-primary mt-1">auto_awesome</span>
+              <div>
+                <h3 className="font-headline-md text-headline-md text-primary uppercase mb-2">AI Extraction Summary</h3>
+                <p className="font-body-lg text-body-lg text-primary mb-4">{result.summary}</p>
+                <div className="flex gap-2 flex-wrap">
+                  <span className="bg-primary text-secondary-container px-2 py-1 font-data-mono text-data-mono uppercase border-2 border-primary">Method: {result.method}</span>
+                  <span className="bg-surface text-primary px-2 py-1 font-data-mono text-data-mono uppercase border-2 border-primary">Source: {file?.name || 'upload'}</span>
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        )}
 
-        {/* Extracted Data / OCR Viewer */}
-        <div className="col-span-4 md:col-span-12 grid grid-cols-1 md:grid-cols-2 gap-gutter mt-4">
-          {/* Original Document View */}
-          <div className="bg-surface-container-lowest border-border-width border-primary flex flex-col h-[600px]">
-            <div className="bg-primary text-white px-4 py-2 border-b-border-width border-primary flex justify-between items-center">
-              <span className="font-data-mono text-data-mono uppercase">Original Source (Image)</span>
-              <span className="material-symbols-outlined text-[20px]">visibility</span>
-            </div>
-            <div className="flex-1 bg-surface-variant p-4 relative overflow-hidden flex items-center justify-center">
-              {/* Placeholder for document image */}
-              <div role="img" aria-label="Scanned medical document placeholder" className="bg-cover bg-center w-full h-full border-2 border-outline-variant shadow-sm bg-surface-container-lowest" style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuBhD7ylJKVX2e-eTy6mVikQi8kazQdOj4jFNiUkGaCR7KvDwFA6pZEVJQl_BfZPwGaNvjIwv6zs9NukaCONRlvZFKfG666d8kkHTaNyr9B9nOeG7WoXjhSYsVY7gQ1PnkR5DuDwDdjZkZcjdD8yPdD1NfpKqDqX-xAtuWnNCGhUYom_u4zA4YKuFd33u3zX7vs46sgDsE3vlT5hizhQv9GO7eYnQRON1Eehz16hEIqw5PzlhbRjdvYEyZPN9boB3HjLBKgrqQCrKt9G')" }}></div>
-              {/* Overlay scanning line effect */}
-              <div className="absolute top-0 left-0 w-full h-1 bg-secondary-container opacity-70 blur-[1px] animate-[scan_3s_ease-in-out_infinite]"></div>
-            </div>
-          </div>
-
-          {/* OCR Text Output */}
-          <div className="bg-surface-container-lowest border-border-width border-primary flex flex-col h-[600px] border-l-[8px] border-l-secondary-container">
-            <div className="bg-primary text-white px-4 py-2 border-b-border-width border-primary flex justify-between items-center">
-              <span className="font-data-mono text-data-mono uppercase">Extracted Data (OCR text)</span>
-              <div className="flex gap-2">
-                <Button variant="ghost" aria-label="Copy Data" className="!p-1 text-secondary-container hover:text-white border-none shadow-none">
-                  <span className="material-symbols-outlined text-[20px]" aria-hidden="true">content_copy</span>
-                </Button>
-                <Button variant="ghost" aria-label="Download Data" className="!p-1 text-secondary-container hover:text-white border-none shadow-none">
-                  <span className="material-symbols-outlined text-[20px]" aria-hidden="true">download</span>
-                </Button>
+        {/* Extracted Data / OCR Viewer — only show after upload */}
+        {result && (
+          <div className="col-span-4 md:col-span-12 grid grid-cols-1 md:grid-cols-1 gap-gutter mt-4">
+            {/* OCR Text Output */}
+            <div className="bg-surface-container-lowest border-border-width border-primary flex flex-col h-[600px] border-l-[8px] border-l-secondary-container">
+              <div className="bg-primary text-white px-4 py-2 border-b-border-width border-primary flex justify-between items-center">
+                <span className="font-data-mono text-data-mono uppercase">Extracted Data (OCR text)</span>
+                <div className="flex gap-2">
+                  <Button variant="ghost" aria-label="Copy Data" className="!p-1 text-secondary-container hover:text-white border-none shadow-none" onClick={() => { navigator.clipboard.writeText(result.extracted_text); showToast('Copied to clipboard', 'success'); }}>
+                    <span className="material-symbols-outlined text-[20px]" aria-hidden="true">content_copy</span>
+                  </Button>
+                </div>
               </div>
-            </div>
-            <div className="flex-1 p-4 bg-surface-container-lowest overflow-y-auto">
-              <pre className="font-data-mono text-data-mono text-on-surface whitespace-pre-wrap leading-relaxed">
-{`PATIENT ID: 8943-22-A
-DATE OF SERVICE: 2023-10-24
-PHYSICIAN: DR. A. MERCER
-
---- COMPREHENSIVE METABOLIC PANEL ---
-
-GLUCOSE         110 mg/dL    (Ref: 70-99)   *HIGH
-BUN             15 mg/dL     (Ref: 6-20) 
-CREATININE      0.9 mg/dL    (Ref: 0.6-1.1)
-SODIUM          140 mEq/L    (Ref: 135-145)
-POTASSIUM       4.2 mEq/L    (Ref: 3.5-5.2)
-CHLORIDE        102 mEq/L    (Ref: 98-108)
-CO2             25 mEq/L     (Ref: 21-31)
-CALCIUM         9.4 mg/dL    (Ref: 8.5-10.5)
-TOTAL PROTEIN   7.2 g/dL     (Ref: 6.4-8.3)
-ALBUMIN         4.5 g/dL     (Ref: 3.5-5.0)
-
---- LIPID PANEL ---
-
-CHOLESTEROL     195 mg/dL    (Ref: <200)
-TRIGLYCERIDES   140 mg/dL    (Ref: <150)
-HDL             45 mg/dL     (Ref: >40)
-LDL (CALC)      122 mg/dL    (Ref: <130)
-
--- END OF REPORT --`}
-              </pre>
-            </div>
-          </div>
-        </div>
-
-        {/* Lab Values Grid */}
-        <div className="col-span-4 md:col-span-12 mt-8">
-          <h3 className="font-headline-md text-headline-md text-primary uppercase mb-6 border-b-border-width border-primary pb-2">Structured Lab Values</h3>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-gutter">
-            {/* Metric Card 1 (Warning) */}
-            <div className="bg-surface-container-lowest border-border-width border-primary p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] relative">
-              <div className="absolute top-2 right-2 w-3 h-3 rounded-full bg-error"></div>
-              <div className="font-label-caps text-label-caps text-on-surface-variant uppercase mb-2">Blood Glucose</div>
-              <div className="font-headline-lg text-headline-lg text-primary">110 <span className="text-body-md font-body-md text-on-surface-variant">mg/dL</span></div>
-              <div className="mt-4 flex items-center justify-between">
-                <span className="bg-error-container text-on-error-container border-2 border-error px-2 py-1 font-label-caps text-label-caps uppercase text-[10px]">ELEVATED</span>
-                <span className="font-data-mono text-data-mono text-xs text-on-surface-variant">Ref: 70-99</span>
-              </div>
-            </div>
-            {/* Metric Card 2 (Normal) */}
-            <div className="bg-surface-container-lowest border-border-width border-primary p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] relative">
-              <div className="absolute top-2 right-2 w-3 h-3 rounded-full bg-secondary-container border-2 border-primary"></div>
-              <div className="font-label-caps text-label-caps text-on-surface-variant uppercase mb-2">Creatinine</div>
-              <div className="font-headline-lg text-headline-lg text-primary">0.9 <span className="text-body-md font-body-md text-on-surface-variant">mg/dL</span></div>
-              <div className="mt-4 flex items-center justify-between">
-                <span className="bg-surface-variant text-primary border-2 border-primary px-2 py-1 font-label-caps text-label-caps uppercase text-[10px]">NORMAL</span>
-                <span className="font-data-mono text-data-mono text-xs text-on-surface-variant">Ref: 0.6-1.1</span>
-              </div>
-            </div>
-            {/* Metric Card 3 (Normal) */}
-            <div className="bg-surface-container-lowest border-border-width border-primary p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] relative">
-              <div className="absolute top-2 right-2 w-3 h-3 rounded-full bg-secondary-container border-2 border-primary"></div>
-              <div className="font-label-caps text-label-caps text-on-surface-variant uppercase mb-2">Sodium</div>
-              <div className="font-headline-lg text-headline-lg text-primary">140 <span className="text-body-md font-body-md text-on-surface-variant">mEq/L</span></div>
-              <div className="mt-4 flex items-center justify-between">
-                <span className="bg-surface-variant text-primary border-2 border-primary px-2 py-1 font-label-caps text-label-caps uppercase text-[10px]">NORMAL</span>
-                <span className="font-data-mono text-data-mono text-xs text-on-surface-variant">Ref: 135-145</span>
-              </div>
-            </div>
-            {/* Metric Card 4 (Normal) */}
-            <div className="bg-surface-container-lowest border-border-width border-primary p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] relative">
-              <div className="absolute top-2 right-2 w-3 h-3 rounded-full bg-secondary-container border-2 border-primary"></div>
-              <div className="font-label-caps text-label-caps text-on-surface-variant uppercase mb-2">Total Cholesterol</div>
-              <div className="font-headline-lg text-headline-lg text-primary">195 <span className="text-body-md font-body-md text-on-surface-variant">mg/dL</span></div>
-              <div className="mt-4 flex items-center justify-between">
-                <span className="bg-surface-variant text-primary border-2 border-primary px-2 py-1 font-label-caps text-label-caps uppercase text-[10px]">NORMAL</span>
-                <span className="font-data-mono text-data-mono text-xs text-on-surface-variant">Ref: &lt;200</span>
+              <div className="flex-1 p-4 bg-surface-container-lowest overflow-y-auto">
+                <pre className="font-data-mono text-data-mono text-on-surface whitespace-pre-wrap leading-relaxed">
+{result.extracted_text}
+                </pre>
               </div>
             </div>
           </div>
-        </div>
+        )}
+
+        {/* Empty state when no upload has been done */}
+        {!result && !isUploading && (
+          <div className="col-span-4 md:col-span-12 mt-8 flex flex-col items-center justify-center py-16">
+            <span className="material-symbols-outlined text-[64px] text-on-surface-variant opacity-30 mb-4">description</span>
+            <p className="font-headline-md text-headline-md text-on-surface-variant uppercase">No documents uploaded yet</p>
+            <p className="font-data-mono text-data-mono text-on-surface-variant mt-2">Upload a PDF, JPG, or PNG to begin OCR extraction</p>
+          </div>
+        )}
       </div>
     </Layout>
   );
 }
+

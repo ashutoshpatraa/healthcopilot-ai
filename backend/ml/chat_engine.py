@@ -184,7 +184,7 @@ class MedicalChatEngine:
         score = float(scores[0][0])
         idx   = int(indices[0][0])
 
-        if score < 0.65:
+        if score < 0.50:
             # Low confidence — fall back to keyword rules instead of guessing wildly
             return self._keyword_respond(message)
 
